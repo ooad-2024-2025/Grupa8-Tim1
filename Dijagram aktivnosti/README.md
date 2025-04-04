@@ -1,0 +1,1 @@
+ovdje stoje dijagrami aktivnosti
