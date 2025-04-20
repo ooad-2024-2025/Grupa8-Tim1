@@ -1,1 +1,0 @@
-ovdje stoje korisnički interfejsi 
