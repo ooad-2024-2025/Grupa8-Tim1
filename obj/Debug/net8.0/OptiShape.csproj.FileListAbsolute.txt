@@ -141,12 +141,6 @@ C:\Desktop\OptiShape\obj\Debug\net8.0\scopedcss\projectbundle\OptiShape.bundle.s
 C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.build.json
 C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.development.json
 C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets\msbuild.OptiShape.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets\msbuild.OptiShape.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets\msbuild.build.OptiShape.props
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.OptiShape.props
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.OptiShape.props
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.csproj.Up2Date
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.dll
@@ -154,3 +148,5 @@ C:\Desktop\OptiShape\obj\Debug\net8.0\refint\OptiShape.dll
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.pdb
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.genruntimeconfig.cache
 C:\Desktop\OptiShape\obj\Debug\net8.0\ref\OptiShape.dll
+C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.sourcelink.json
+C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.build.json.cache
