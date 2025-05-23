@@ -1,0 +1,59 @@
+﻿@model IEnumerable<OptiShape.Models.Placanje>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DatumPlacanja)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Iznos)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PopustPrimijenjen)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NacinPlacanja)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Korisnik)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DatumPlacanja)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Iznos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PopustPrimijenjen)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NacinPlacanja)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Korisnik.IdKorisnika)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdPlacanja">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdPlacanja">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdPlacanja">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
