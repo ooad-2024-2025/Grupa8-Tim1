@@ -12,7 +12,23 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddMvcOptions(options =>
+    {
+        var provider = options.ModelBindingMessageProvider;
+
+        provider.SetValueMustNotBeNullAccessor(field => $"Polje '{field}' je obavezno.");
+        provider.SetValueMustBeANumberAccessor(field => $"Polje '{field}' mora biti broj.");
+        provider.SetMissingBindRequiredValueAccessor(field => $"Vrijednost za '{field}' nije dostavljena.");
+        provider.SetAttemptedValueIsInvalidAccessor((value, field) => $"Vrijednost '{value}' nije ispravna za '{field}'.");
+        provider.SetMissingKeyOrValueAccessor(() => "Nedostaje vrijednost.");
+        provider.SetUnknownValueIsInvalidAccessor(field => $"Vrijednost za '{field}' nije ispravna.");
+        provider.SetValueIsInvalidAccessor(field => $"Vrijednost za '{field}' nije validna.");
+        provider.SetNonPropertyAttemptedValueIsInvalidAccessor(value => $"Vrijednost '{value}' nije validna.");
+        provider.SetNonPropertyUnknownValueIsInvalidAccessor(() => "Vrijednost nije validna.");
+        provider.SetNonPropertyValueMustBeANumberAccessor(() => "Vrijednost mora biti broj.");
+    });
+
 
 var app = builder.Build();
 

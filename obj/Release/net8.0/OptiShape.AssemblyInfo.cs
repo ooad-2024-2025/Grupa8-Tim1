@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-OptiShape-f86e6d8e-4665-4a94-9344-e5e7e4f4cda7")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("OptiShape")]
-[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e5f826ae2d08ccbb6938e3297848cdb9b58308c")]
 [assembly: System.Reflection.AssemblyProductAttribute("OptiShape")]
