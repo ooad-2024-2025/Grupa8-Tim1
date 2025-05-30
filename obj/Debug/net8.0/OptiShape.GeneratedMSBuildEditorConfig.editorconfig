@@ -100,26 +100,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVJVHJlbmluZ2FcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Desktop/OptiShape/Views/PlanIshraneTreninga/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVUcmVuaW5nYVxDcmVhdGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Desktop/OptiShape/Views/PlanIshraneTreninga/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVUcmVuaW5nYVxEZWxldGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Desktop/OptiShape/Views/PlanIshraneTreninga/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVUcmVuaW5nYVxEZXRhaWxzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Desktop/OptiShape/Views/PlanIshraneTreninga/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVUcmVuaW5nYVxFZGl0LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Desktop/OptiShape/Views/PlanIshraneTreninga/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVUcmVuaW5nYVxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Desktop/OptiShape/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 

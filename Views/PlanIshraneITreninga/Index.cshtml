@@ -1,65 +1,47 @@
 ﻿@model IEnumerable<OptiShape.Models.PlanIshraneTreninga>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Planovi ishrane i treninga";
 }
 
-<h1>Index</h1>
+<h1>Planovi ishrane i treninga</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Kreiraj novi</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DatumKreiranja)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Kalorije)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Protein)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ugljikohidrati)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Masti)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Korisnik)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DatumKreiranja)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Kalorije)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Protein)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ugljikohidrati)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Masti)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Korisnik.IdKorisnika)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdPlana">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdPlana">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdPlana">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.DatumKreiranja)</th>
+                <th>@Html.DisplayNameFor(model => model.Kalorije)</th>
+                <th class="d-none d-md-table-cell">@Html.DisplayNameFor(model => model.Protein)</th>
+                <th class="d-none d-md-table-cell">@Html.DisplayNameFor(model => model.Ugljikohidrati)</th>
+                <th class="d-none d-lg-table-cell">@Html.DisplayNameFor(model => model.Masti)</th>
+                <th class="d-none d-md-table-cell">@Html.DisplayNameFor(model => model.Korisnik)</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.DatumKreiranja)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Kalorije)</td>
+                    <td class="d-none d-md-table-cell">@Html.DisplayFor(modelItem => item.Protein)</td>
+                    <td class="d-none d-md-table-cell">@Html.DisplayFor(modelItem => item.Ugljikohidrati)</td>
+                    <td class="d-none d-lg-table-cell">@Html.DisplayFor(modelItem => item.Masti)</td>
+                    <td class="d-none d-md-table-cell">@Html.DisplayFor(modelItem => item.Korisnik.IdKorisnika)</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.IdPlana" class="btn btn-sm btn-outline-primary">Uredi</a>
+                            <a asp-action="Details" asp-route-id="@item.IdPlana" class="btn btn-sm btn-outline-info">Detalji</a>
+                            <a asp-action="Delete" asp-route-id="@item.IdPlana" class="btn btn-sm btn-outline-danger">Obriši</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
