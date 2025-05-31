@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using OptiShape.Data;
 using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
+    [Authorize(Roles = "Administrator, Korisnik")]
     public class KorisnikController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -44,16 +46,16 @@ namespace OptiShape.Controllers
         }
 
         // GET: Korisnik/Create
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Korisnik/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create([Bind("IdKorisnika,Ime,Prezime,Email,Sifra,DatumRodjenja,Visina,Tezina,Spol,Cilj,StudentskiStatus,BrojTelefona")] Korisnik korisnik)
         {
             if (ModelState.IsValid)
@@ -66,6 +68,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: Korisnik/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -82,10 +85,9 @@ namespace OptiShape.Controllers
         }
 
         // POST: Korisnik/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("IdKorisnika,Ime,Prezime,Email,Sifra,DatumRodjenja,Visina,Tezina,Spol,Cilj,StudentskiStatus,BrojTelefona")] Korisnik korisnik)
         {
             if (id != korisnik.IdKorisnika)
@@ -117,6 +119,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: Korisnik/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -137,6 +140,7 @@ namespace OptiShape.Controllers
         // POST: Korisnik/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var korisnik = await _context.Korisnik.FindAsync(id);

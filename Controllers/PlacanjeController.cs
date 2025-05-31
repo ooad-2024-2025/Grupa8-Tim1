@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using OptiShape.Data;
 using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
+    [Authorize(Roles = "Administrator, Korisnik")]
     public class PlacanjeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -46,6 +48,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Create
+        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika");
@@ -53,10 +56,9 @@ namespace OptiShape.Controllers
         }
 
         // POST: Placanje/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create([Bind("IdPlacanja,DatumPlacanja,Iznos,PopustPrimijenjen,NacinPlacanja,IdKorisnika")] Placanje placanje)
         {
             if (ModelState.IsValid)
@@ -70,6 +72,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -87,10 +90,9 @@ namespace OptiShape.Controllers
         }
 
         // POST: Placanje/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("IdPlacanja,DatumPlacanja,Iznos,PopustPrimijenjen,NacinPlacanja,IdKorisnika")] Placanje placanje)
         {
             if (id != placanje.IdPlacanja)
@@ -123,6 +125,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,6 +147,7 @@ namespace OptiShape.Controllers
         // POST: Placanje/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var placanje = await _context.Placanje.FindAsync(id);
