@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OptiShape.Data;
+using OptiShape.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+
+    // Konfiguracija validacije lozinke
+    options.Password.RequireDigit = false;            // Ne zahtijeva brojeve
+    options.Password.RequireLowercase = false;        // Ne zahtijeva mala slova
+    options.Password.RequireUppercase = false;        // Ne zahtijeva velika slova
+    options.Password.RequireNonAlphanumeric = false;  // Ne zahtijeva specijalne znakove
+    options.Password.RequiredLength = 6;              // Minimalna dužina 6 znakova
+})
+.AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews()
     .AddMvcOptions(options =>
     {

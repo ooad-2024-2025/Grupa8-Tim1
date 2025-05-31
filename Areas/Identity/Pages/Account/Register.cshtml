@@ -1,0 +1,127 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registracija";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Kreirajte novi račun.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Ime" class="form-control" autocomplete="ime" aria-required="true" />
+                <label asp-for="Input.Ime"></label>
+                <span asp-validation-for="Input.Ime" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Prezime" class="form-control" autocomplete="prezime" aria-required="true" />
+                <label asp-for="Input.Prezime"></label>
+                <span asp-validation-for="Input.Prezime" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DatumRodjenja" class="form-control" type="date" aria-required="true" />
+                <label asp-for="Input.DatumRodjenja"></label>
+                <span asp-validation-for="Input.DatumRodjenja" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Visina" class="form-control" aria-required="true" />
+                <label asp-for="Input.Visina"></label>
+                <span asp-validation-for="Input.Visina" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Tezina" class="form-control" aria-required="true" />
+                <label asp-for="Input.Tezina"></label>
+                <span asp-validation-for="Input.Tezina" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.Spol" class="control-label"></label>
+                <select asp-for="Input.Spol" class="form-control" asp-items="Html.GetEnumSelectList<OptiShape.Models.Spol>()"></select>
+                <span asp-validation-for="Input.Spol" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Input.Cilj" class="control-label"></label>
+                <select asp-for="Input.Cilj" class="form-control" asp-items="Html.GetEnumSelectList<OptiShape.Models.Cilj>()"></select>
+                <span asp-validation-for="Input.Cilj" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Input.StudentskiStatus" /> @Html.DisplayNameFor(m => m.Input.StudentskiStatus)
+                </label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email"></label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="šifra" />
+                <label asp-for="Input.Password"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="potvrdite šifru" />
+                <label asp-for="Input.ConfirmPassword"></label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.BrojTelefona" class="form-control" placeholder="Broj telefona" />
+                <label asp-for="Input.BrojTelefona"></label>
+                <span asp-validation-for="Input.BrojTelefona" class="text-danger"></span>
+            </div>
+
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registracija</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Koristite drugu uslugu za registraciju.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            Nema konfigurisanih vanjskih servisa za autentikaciju. Pogledajte ovaj <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                članak
+                                o podešavanju ove ASP.NET aplikacije za podršku prijave putem vanjskih servisa
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Prijava koristeći @provider.DisplayName račun">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
