@@ -1,40 +1,195 @@
 ﻿@{
-    ViewData["Title"] = "Početna stranica";
+    ViewData["Title"] = "Početna";
+    ViewData["FixedNavbar"] = true;
 }
 
-<div class="text-center mb-5 mt-4">
-    <img src="~/images/OptiShapeLogo.png" alt="OptiShape Logo" class="img-fluid" style="max-width: 600px;" />
-</div>
+<section style="
+    background-image: url('/images/slika1.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 20px 0;
+    color: white;
+    position: relative;
+    overflow: hidden;
+">
 
-<div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-        <div class="card shadow border-0">
-            <div class="card-body p-4">
-                <p class="lead text-center mb-4">
-                    OptiShape je integrisani sistem dizajniran za podršku personaliziranom fitness pristupu i
-                    unaprjedenju zdravlja.
-                </p>
-                <p>
-                    Sistem omogućava unos osnovnih ličnih podataka, poput težine, visine i godina, kako bi se
-                    izračunao indeks tjelesne mase (BMI) i formulisale osnovne nutricionističke preporuke.
-                </p>
-                <p>
-                    Kroz apstraktan pristup, OptiShape kreira smjernice za unos kalorija i proteina prilagođene
-                    ciljevima korisnika, bilo da se radi o mršavljenju ili povećanju mišićne mase.
-                </p>
-                <p>
-                    Platforma omogućava pristup stručnim savjetima personalnih trenera, pružajući dodatnu podršku
-                    korisnicima.
-                </p>
-                <p>
-                    Sistem funkcioniše kao sveobuhvatni vodič u donošenju odluka o prehrani i fizičkoj aktivnosti.
-                    Njegova osnovna namjena je da integriše zdravstvene i fitness podatke u jedinstveni interfejs.
-                </p>
-                <p>
-                    Na ovaj način, OptiShape pomaže korisnicima da efikasno prate i ostvaruju svoje zdravstvene i
-                    fitness ciljeve.
-                </p>
+    <div class="fade-in" style="max-width: 800px; margin-top: -100px;">
+
+        <h1 style="font-size: 4rem; font-weight: 800; margin-bottom: 20px;">
+            <span style="color:white">Dobrodošli na </span> <span style="color:#60a5fa;">OptiShape!</span>
+        </h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">
+            OptiShape je vaš pametni partner za ostvarenje zdravstvenih i fitness ciljeva. <br />
+            Povezujemo lične podatke sa stručnim smjernicama kako biste donosili bolje odluke – svaki dan.
+        </p>
+        <a href="javascript:void(0)" class="btn btn-primary" onclick="prikaziSadrzaj()" style="
+            background-color: white;
+            color: #2563eb;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+        ">
+            Započni!
+        </a>
+    </div>
+</section>
+
+<div class="spacer"></div>
+
+<!-- SADRŽAJ -->
+<div id="sadrzaj">
+
+    <!-- O NAMA -->
+    <section id="opis" class="fade-in-left">
+        <h2>O OptiShape</h2>
+        <p>
+            OptiShape je integrisani sistem dizajniran za podršku personaliziranom fitness pristupu i unapređenju zdravlja.
+            Sistem omogućava unos osnovnih ličnih podataka, poput težine, visine i godina, kako bi se izračunao BMI i formulisale preporuke.
+            Platforma povezuje korisnike sa stručnim savjetima personalnih trenera i vodi ih ka zdravijem životu.
+        </p>
+    </section>
+
+    <!-- BENEFITI -->
+    <section id="benefiti" class="fade-in-right">
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 40px;">Zašto izabrati OptiShape?</h2>
+        <div class="benefiti-grid">
+            <div>
+                <h4>📝 Registruj se</h4>
+                <p>Kreiraj svoj profil i unesi osnovne podatke.</p>
+            </div>
+            <div>
+                <h4>🎯 Postavi ciljeve</h4>
+                <p>Definiši željenu težinu, navike i tempo vježbanja.</p>
+            </div>
+            <div>
+                <h4>💪 Prati napredak</h4>
+                <p>Aplikacija ti automatski predlaže planove i prati rezultate.</p>
             </div>
         </div>
-    </div>
+    </section>
+
+    <div class="spacer2"></div>
+
+    <!-- CTA -->
+    <section id="cta" style="padding: 60px 20px; background-color: #2563eb; color: white; text-align: center;">
+        <h2 style="font-size: 2rem;">Spremni za početak?</h2>
+        <p>Registruj se besplatno i napravi svoj prvi personalizovani plan!</p>
+        <a href="/Identity/Account/Register" class="btn btn-light mt-3" style="padding: 10px 24px; border-radius: 6px; font-weight: 500;">Registruj se</a>
+    </section>
+
+    <div class="spacer3"></div>
+
+
 </div>
+
+<!-- STIL -->
+<style>
+
+    .spacer {
+        height: 100px;
+    }
+
+
+    .spacer2 {
+        height: 100px;
+    }
+
+    .spacer3 {
+        height: 100px;
+    }
+
+    html, body {
+        overflow-x: hidden;
+    }
+
+    
+    #opis, #benefiti {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 20px;
+        text-align: center;
+    }
+
+    .benefiti-grid {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+
+        .benefiti-grid > div {
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+        }
+
+    #opis, #benefiti, #cta {
+        scroll-margin-top: 150px;
+    }
+
+    .fade-in-left,
+    .fade-in-right {
+        opacity: 0;
+        transition: all 2s ease;
+    }
+
+    .fade-in-left {
+        transform: translateX(-60px);
+    }
+
+    .fade-in-right {
+        transform: translateX(60px);
+    }
+
+        .fade-in-left.show,
+        .fade-in-right.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+</style>
+
+<!-- SKRIPTE -->
+<script>
+    function prikaziSadrzaj() {
+        const cta = document.getElementById("cta");
+        if (cta) {
+            cta.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", function () {
+        const observerOptions = {
+            threshold: 0.2
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const targets = document.querySelectorAll('.fade-in-left, .fade-in-right');
+
+        targets.forEach(el => {
+            observer.observe(el);
+
+            // fallback ako su već u viewportu
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                el.classList.add('show');
+            }
+        });
+    });
+</script>

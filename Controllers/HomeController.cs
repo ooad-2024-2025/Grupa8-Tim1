@@ -1,6 +1,7 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OptiShape.Models;
+using System.Diagnostics;
 
 namespace OptiShape.Controllers
 {
@@ -19,6 +20,12 @@ namespace OptiShape.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult Dashboard()
         {
             return View();
         }

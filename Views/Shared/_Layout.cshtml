@@ -1,27 +1,100 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OptiShape</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/OptiShape.styles.css" asp-append-version="true" />
-</head>
-<body>
+﻿<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="utf-8" />  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
+    <title>@ViewData["Title"] - OptiShape</title>  
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />  
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />  
+    <link rel="stylesheet" href="~/OptiShape.styles.css" asp-append-version="true" />  
+
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+
+
+    <!-- ANIMACIJE -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+        }
+
+        h1, h2 {
+            color: #1e3a8a;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1.5s ease forwards;
+        }
+
+        @@keyframes fadeInUp {
+            to
+
+        {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+                transform: scale(1.05);
+            }
+
+
+
+
+
+
+   
+
+    </style>
+
+    
+   
+
+
+    
+
+
+</head>  
+
+<body>  
+   
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+        <<nav class="navbar navbar-expand-sm navbar-light @(ViewData["FixedNavbar"] as bool? == true ? "fixed-top bg-white shadow-sm border-bottom" : "bg-primary border-bottom")"> <!-- na index stranici fiksirat navbar-->
+
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OptiShape</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">OptiShape</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Startni ekran</a>
-                        </li>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Korisnik" asp-action="Index">Korisnici</a>
                         </li>
@@ -37,28 +110,55 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Placanje" asp-action="Index">Plaćanje</a>
                         </li>
-
-
                     </ul>
+
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - OptiShape
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+    @{
+        var mainStyle = (ViewData["FixedNavbar"] as bool? == true) ? "padding-top: 80px;" : "";
+
+        // Ako smo na index stranici, ne dodaj padding
+        if ((ViewData["Title"] as string) == "Početna")
+        {
+            mainStyle = "";
+        }
+
+    }
+
+}
+<main style="@mainStyle">
+    @RenderBody()
+
+
+</main>
+
+
+
+
+<!-- vezano za fixirani navbar-->
+
+
+    
+
+
+    <div class="container">  
+        <main role="main" class="pb-3">  
+            @RenderBody()  
+        </main>  
+    </div>  
+
+    <footer class="border-top footer text-muted">  
+        <div class="container">  
+            &copy; 2025 - OptiShape  
+        </div>  
+    </footer>  
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>  
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>  
+    <script src="~/js/site.js" asp-append-version="true"></script>  
+    @await RenderSectionAsync("Scripts", required: false)  
+</body>  
 </html>

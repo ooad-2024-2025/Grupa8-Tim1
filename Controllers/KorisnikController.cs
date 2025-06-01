@@ -11,7 +11,7 @@ using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
-    [Authorize(Roles = "Administrator, Korisnik")]
+    [Authorize(Roles = "Administrator")]
     public class KorisnikController : Controller
     {
         private readonly ApplicationDbContext _context;

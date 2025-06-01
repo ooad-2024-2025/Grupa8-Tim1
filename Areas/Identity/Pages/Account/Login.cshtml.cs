@@ -116,6 +116,10 @@ namespace OptiShape.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+                    if (string.IsNullOrEmpty(returnUrl) || returnUrl == "/")
+                    {
+                        return RedirectToAction("Dashboard", "Home");
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

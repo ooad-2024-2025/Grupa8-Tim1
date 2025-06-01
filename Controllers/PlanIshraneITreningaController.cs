@@ -11,7 +11,7 @@ using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
-    [Authorize(Roles = "Administrator, Korisnik")]
+    [Authorize(Roles = "Administrator, Korisnik, Trener")]
     public class PlanIshraneITreningaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -48,7 +48,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: PlanIshraneITreninga/Create
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public IActionResult Create()
         {
             ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika");
@@ -58,7 +58,7 @@ namespace OptiShape.Controllers
         // POST: PlanIshraneITreninga/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Create([Bind("IdPlana,DatumKreiranja,Kalorije,Protein,Ugljikohidrati,Masti,IdKorisnika")] PlanIshraneTreninga planIshraneTreninga)
         {
             if (ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: PlanIshraneITreninga/Edit/5
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,7 +92,7 @@ namespace OptiShape.Controllers
         // POST: PlanIshraneITreninga/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int id, [Bind("IdPlana,DatumKreiranja,Kalorije,Protein,Ugljikohidrati,Masti,IdKorisnika")] PlanIshraneTreninga planIshraneTreninga)
         {
             if (id != planIshraneTreninga.IdPlana)
@@ -125,7 +125,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: PlanIshraneITreninga/Delete/5
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -147,7 +147,7 @@ namespace OptiShape.Controllers
         // POST: PlanIshraneITreninga/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var planIshraneTreninga = await _context.PlanIshraneTreninga.FindAsync(id);
