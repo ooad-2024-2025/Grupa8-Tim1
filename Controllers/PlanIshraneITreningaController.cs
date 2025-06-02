@@ -100,8 +100,24 @@ namespace OptiShape.Controllers
             {
                 _context.Add(planIshraneTreninga);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Plan je uspješno dodat.";
                 return RedirectToAction(nameof(Index));
             }
+
+            
+
+
+
+            // DEBUG: Ispis svih grešaka iz ModelState ako forma nije validna
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+
 
             // Ponovo postavi SelectList s pravilnim formatiranjem ako validacija ne prođe
             if (User.IsInRole("Trener"))
@@ -217,6 +233,20 @@ namespace OptiShape.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            if (!ModelState.IsValid)
+            {
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"❌ Greška u polju '{entry.Key}': {error.ErrorMessage}");
+                    }
+                }
+            }
+
+           
+                 // dodana ova 2
 
             // Ponovno postavi SelectList ako validacija ne uspije
             if (User.IsInRole("Trener"))

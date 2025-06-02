@@ -1,57 +1,143 @@
 ﻿@model OptiShape.Models.PlanIshraneTreninga
 
-@{
-    ViewData["Title"] = "Create";
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var entry in ViewData.ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    <li><strong>@entry.Key</strong>: @error.ErrorMessage</li>
+                }
+            }
+        </ul>
+    </div>
 }
 
-<h1>Create</h1>
 
-<h4>PlanIshraneTreninga</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="DatumKreiranja" class="control-label"></label>
-                <input asp-for="DatumKreiranja" class="form-control" />
-                <span asp-validation-for="DatumKreiranja" class="text-danger"></span>
+@{
+    ViewData["Title"] = "Kreiraj plan";
+}
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease-out forwards;
+    }
+
+    @@keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .input-icon {
+        position: relative;
+    }
+
+        .input-icon i {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+    .btn-click-effect {
+        transition: transform 0.15s ease;
+    }
+
+        .btn-click-effect:active {
+            transform: scale(0.95);
+        }
+</style>
+
+<div class="container mt-5 mb-5 fade-in">
+    <h1 class="text-center text-primary mb-4 fw-bold">📝 Novi plan ishrane i treninga</h1>
+
+    <!-- OVDJE JE KORAK 1: method="post" dodat -->
+    <form asp-action="Create" method="post" class="shadow-lg p-5 bg-white rounded-4 border">
+        @Html.AntiForgeryToken()
+    
+
+
+
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-3">
+            <div class="col-12 input-icon">
+                <label asp-for="IdKorisnika" class="form-label">👤 Korisnik</label>
+                <select asp-for="IdKorisnika" class="form-select" asp-items="ViewBag.IdKorisnika"></select>
+                <span asp-validation-for="IdKorisnika" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Kalorije" class="control-label"></label>
+
+            <div class="col-md-6 input-icon">
+                <label asp-for="DatumKreiranja" class="form-label">📅 Datum kreiranja</label>
+                <input asp-for="DatumKreiranja" class="form-control" type="date" />
+                <span asp-validation-for="DatumKreiranja" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6 input-icon">
+                <label asp-for="Kalorije" class="form-label">🔥 Kalorije</label>
                 <input asp-for="Kalorije" class="form-control" />
-                <span asp-validation-for="Kalorije" class="text-danger"></span>
+                <span asp-validation-for="Kalorije" class="text-danger small"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Protein" class="control-label"></label>
-                <input asp-for="Protein" class="form-control" />
-                <span asp-validation-for="Protein" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ugljikohidrati" class="control-label"></label>
-                <input asp-for="Ugljikohidrati" class="form-control" />
-                <span asp-validation-for="Ugljikohidrati" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Masti" class="control-label"></label>
-                <input asp-for="Masti" class="form-control" />
-                <span asp-validation-for="Masti" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdKorisnika" class="control-label"></label>
-                <select asp-for="IdKorisnika" class ="form-control" asp-items="ViewBag.IdKorisnika"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+            <div class="col-md-4 input-icon">
+                <label asp-for="Protein" class="form-label">🥩 Proteini (g)</label>
+                <input asp-for="Protein" class="form-control" />
+                <span asp-validation-for="Protein" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4 input-icon">
+                <label asp-for="Ugljikohidrati" class="form-label">🍞 Ugljikohidrati (g)</label>
+                <input asp-for="Ugljikohidrati" class="form-control" />
+                <span asp-validation-for="Ugljikohidrati" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4 input-icon">
+                <label asp-for="Masti" class="form-label">🥑 Masti (g)</label>
+                <input asp-for="Masti" class="form-control" />
+                <span asp-validation-for="Masti" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-click-effect">← Nazad</a>
+            <button type="submit" class="btn btn-success" onclick="console.log('Submit kliknut');">💾 Sačuvaj</button>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // Poruke validacije na bosanskom jeziku
+        $.extend($.validator.messages, {
+            required: "Ovo polje je obavezno.",
+            number: "Unesite ispravan broj.",
+            date: "Unesite ispravan datum.",
+            maxlength: $.validator.format("Najviše {0} karaktera."),
+            minlength: $.validator.format("Najmanje {0} karaktera."),
+            email: "Unesite ispravnu email adresu."
+        });
+
+        $(function () {
+            if (typeof $.validator !== 'undefined') {
+                console.log("✅ jQuery validator prisutan.");
+            }
+            if (typeof $.validator.unobtrusive !== 'undefined') {
+                console.log("✅ Unobtrusive validator prisutan.");
+            } else {
+                console.warn("❌ Unobtrusive validator NIJE učitan.");
+            }
+        });
+    </script>
 }
