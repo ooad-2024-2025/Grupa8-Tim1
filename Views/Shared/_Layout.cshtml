@@ -1,12 +1,18 @@
-﻿<!DOCTYPE html>  
+﻿@using Microsoft.AspNetCore.Identity
+@using OptiShape.Models
+@inject SignInManager<ApplicationUser> SignInManager
+<!DOCTYPE html> 
+
 <html lang="en">  
 <head>  
+
     <meta charset="utf-8" />  
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
     <title>@ViewData["Title"] - OptiShape</title>  
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />  
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />  
     <link rel="stylesheet" href="~/OptiShape.styles.css" asp-append-version="true" />  
+
 
     <!-- Font Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
@@ -63,6 +69,72 @@
             }
 
 
+            /* za nav*/
+        .custom-navbar,
+        .custom-navbar-alt {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 18px 30px;
+            font-family: 'Inter', sans-serif;
+            z-index: 1030;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2563eb !important;
+            letter-spacing: -0.5px;
+            transition: transform 0.3s ease;
+        }
+
+            .navbar-brand:hover {
+                transform: scale(1.05);
+            }
+
+        .navbar-nav .nav-link {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            padding: 10px 14px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s;
+        }
+
+            .navbar-nav .nav-link:hover {
+                background-color: #eff6ff;
+                color: #2563eb;
+                transform: translateY(-1px);
+            }
+
+        .navbar-nav.gap-2 > li,
+        .navbar-nav.gap-4 > li {
+            margin-left: 0.4rem;
+            margin-right: 0.4rem;
+        }
+
+        .navbar-nav li {
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
+
+        /* ZA LOGO */
+
+        .logo-hover {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+            .logo-hover:hover {
+                transform: scale(1.08);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            }
+
+
+
+
+
+
+
 
 
 
@@ -77,64 +149,116 @@
 
     
 
-
+    @RenderSection("Styles", required: false)
 </head>  
 
 <body>  
    
 
-    <header>
-        <<nav class="navbar navbar-expand-sm navbar-light @(ViewData["FixedNavbar"] as bool? == true ? "fixed-top bg-white shadow-sm border-bottom" : "bg-primary border-bottom")"> <!-- na index stranici fiksirat navbar-->
-
+    <header> <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-sm @(ViewData["FixedNavbar"] as bool? == true ? "fixed-top custom-navbar shadow-sm" : "custom-navbar-alt")">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">OptiShape</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                @if (!SignInManager.IsSignedIn(User))
+                {
+                    <!-- centrirani logo za neulogovane --> 
+                    <div class="mx-auto">
+                        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                            <img src="~/images/logo.png" alt="OptiShape" class="logo-hover" style="height: 48px;" />
+
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <!-- klasicni tekstualni logo za ulogovane -->
+                    <a class="navbar-brand" asp-controller="Home" asp-action="@(SignInManager.IsSignedIn(User) ? "Dashboard" : "Index")">
+                        <img src="~/images/logo.png" alt="OptiShape" class="logo-hover" style="height: 48px;" />
+                    </a>
+
+                }
+
+
+
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Korisnik" asp-action="Index">Korisnici</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="PlanIshraneITreninga" asp-action="Index">Planovi ishrane</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="StatistikeNapretka" asp-action="Index">Statistike napretka</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Termin" asp-action="Index">Termini</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Placanje" asp-action="Index">Plaćanje</a>
-                        </li>
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-3">
+
+                        @if (!SignInManager.IsSignedIn(User)) /* UKOLIKO NIJE SIGN INOVAN */
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/#opis">O aplikaciji</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/#benefiti">Kako započeti</a>
+                            </li>
+                        }
+
+
+
+
+
+
+
+
+                        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) /* REKSTRIKCIJA NA KORISNICI (SAMO ZA ADMINA) */
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Korisnik" asp-action="Index">Korisnici</a>
+                            </li> // samo za admina
+                        }
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="PlanIshraneITreninga" asp-action="Index">Planovi ishrane</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="StatistikeNapretka" asp-action="Index">Statistike napretka</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Termin" asp-action="Index">Termini</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Placanje" asp-action="Index">Plaćanje</a>
+                            </li>
+                        }
+
+
                     </ul>
 
-                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav gap-2">
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>
+
     </header>
 
     @{
-        var mainStyle = (ViewData["FixedNavbar"] as bool? == true) ? "padding-top: 80px;" : "";
+        var isFixed = ViewData["FixedNavbar"] as bool? == true;
 
-        // Ako smo na index stranici, ne dodaj padding
-        if ((ViewData["Title"] as string) == "Početna")
+        // Po defaultu fiksiran navbar traži padding
+        var mainStyle = isFixed ? "padding-top: 80px;" : "";
+
+        // Ali ne dodaj padding ako korisnik nije logovan (npr. početna stranica ima centrirani logo)
+        if (!SignInManager.IsSignedIn(User))
         {
             mainStyle = "";
         }
-
     }
 
-}
-<main style="@mainStyle">
-    @RenderBody()
+
+    <main style="@mainStyle" role="main" class="pb-3">
+        @RenderBody()
+    </main>
 
 
-</main>
 
 
 
@@ -145,11 +269,7 @@
     
 
 
-    <div class="container">  
-        <main role="main" class="pb-3">  
-            @RenderBody()  
-        </main>  
-    </div>  
+    
 
     <footer class="border-top footer text-muted">  
         <div class="container">  

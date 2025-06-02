@@ -2,12 +2,74 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Registracija";
+    ViewData["FixedNavbar"] = true;
 }
 
-<h1>@ViewData["Title"]</h1>
+@section Styles {
+    <style>
+        .register-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-top: 40px;
+            margin-bottom: 30px;
+        }
 
-<div class="row">
-    <div class="col-md-4">
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 20px;
+            gap: 60px;
+        }
+
+        .register-form, .external-register {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 500px;
+        }
+
+            .register-form h2, .external-register h3 {
+                font-weight: 700;
+                margin-bottom: 25px;
+                color: #1e3a8a;
+            }
+
+        .form-control,
+        select.form-control {
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+                transform: translateY(-1px);
+            }
+
+        .form-check-label {
+            font-weight: 500;
+        }
+    </style>
+}
+
+<h1 class="register-title">@ViewData["Title"]</h1>
+
+<div class="register-container">
+    <div class="register-form">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <h2>Kreirajte novi račun.</h2>
             <hr />
@@ -43,21 +105,22 @@
                 <span asp-validation-for="Input.Tezina" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Input.Spol" class="control-label"></label>
+            <div class="form-floating mb-3">
                 <select asp-for="Input.Spol" class="form-control" asp-items="Html.GetEnumSelectList<OptiShape.Models.Spol>()"></select>
+                <label asp-for="Input.Spol"></label>
                 <span asp-validation-for="Input.Spol" class="text-danger"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Input.Cilj" class="control-label"></label>
+            <div class="form-floating mb-3">
                 <select asp-for="Input.Cilj" class="form-control" asp-items="Html.GetEnumSelectList<OptiShape.Models.Cilj>()"></select>
+                <label asp-for="Input.Cilj"></label>
                 <span asp-validation-for="Input.Cilj" class="text-danger"></span>
             </div>
 
             <div class="form-group form-check mb-3">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Input.StudentskiStatus" /> @Html.DisplayNameFor(m => m.Input.StudentskiStatus)
+                    <input class="form-check-input" asp-for="Input.StudentskiStatus" />
+                    @Html.DisplayNameFor(m => m.Input.StudentskiStatus)
                 </label>
             </div>
 
@@ -88,37 +151,30 @@
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registracija</button>
         </form>
     </div>
-    <div class="col-md-6 col-md-offset-2">
-        <section>
-            <h3>Koristite drugu uslugu za registraciju.</h3>
-            <hr />
-            @{
-                if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                {
-                    <div>
-                        <p>
-                            Nema konfigurisanih vanjskih servisa za autentikaciju. Pogledajte ovaj <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
-                                članak
-                                o podešavanju ove ASP.NET aplikacije za podršku prijave putem vanjskih servisa
-                            </a>.
-                        </p>
-                    </div>
-                }
-                else
-                {
-                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                        <div>
-                            <p>
-                                @foreach (var provider in Model.ExternalLogins!)
-                                {
-                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Prijava koristeći @provider.DisplayName račun">@provider.DisplayName</button>
-                                }
-                            </p>
-                        </div>
-                    </form>
-                }
+
+    <div class="external-register">
+        <h3>Koristite drugu uslugu za registraciju.</h3>
+        <hr />
+        @{
+            if ((Model.ExternalLogins?.Count ?? 0) == 0)
+            {
+                <p>
+                    Nema konfigurisanih vanjskih servisa za autentikaciju. Pogledajte ovaj
+                    <a href="https://go.microsoft.com/fwlink/?LinkID=532715">članak</a>.
+                </p>
             }
-        </section>
+            else
+            {
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        <button type="submit" class="btn btn-primary w-100 mb-2" name="provider" value="@provider.Name">
+                            Registruj se putem @provider.DisplayName
+                        </button>
+                    }
+                </form>
+            }
+        }
     </div>
 </div>
 

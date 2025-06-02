@@ -1,0 +1,4 @@
+C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\wwwroot\images\hero.png
+C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\wwwroot\images\hero1.jpg
+C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\wwwroot\images\OptiShapeLogo.png
+C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\wwwroot\images\slika1.png
