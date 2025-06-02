@@ -49,9 +49,44 @@ namespace OptiShape.Controllers
 
         // GET: PlanIshraneITreninga/Create
         [Authorize(Roles = "Administrator, Trener")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika");
+            // Provjera uloge i filtriranje korisnika u skladu s tim
+            if (User.IsInRole("Trener"))
+            {
+                // Dohvati email trenutnog trenera
+                var trenerEmail = User.Identity.Name;
+
+                // Pronađi trenera u tablici Korisnik
+                var trener = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener != null)
+                {
+                    // Dohvati samo korisnike ovog trenera
+                    var korisniciTrenera = await _context.Korisnik
+                        .Where(k => k.IdTrenera == trener.IdKorisnika)
+                        .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                        .ToListAsync();
+
+                    // Kreiraj SelectList s pripremljenim punim imenom
+                    ViewData["IdKorisnika"] = new SelectList(korisniciTrenera, "IdKorisnika", "PunoIme");
+                }
+                else
+                {
+                    // Fallback ako nije pronađen trener
+                    ViewData["IdKorisnika"] = new SelectList(new List<object>(), "IdKorisnika", "PunoIme");
+                }
+            }
+            else // Administrator
+            {
+                // Administratori vide sve korisnike s punim imenom
+                var korisnici = await _context.Korisnik
+                    .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                    .ToListAsync();
+                ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme");
+            }
+
             return View();
         }
 
@@ -67,7 +102,38 @@ namespace OptiShape.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", planIshraneTreninga.IdKorisnika);
+
+            // Ponovo postavi SelectList s pravilnim formatiranjem ako validacija ne prođe
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity.Name;
+                var trener = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener != null)
+                {
+                    var korisniciTrenera = await _context.Korisnik
+                        .Where(k => k.IdTrenera == trener.IdKorisnika)
+                        .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                        .ToListAsync();
+
+                    ViewData["IdKorisnika"] = new SelectList(korisniciTrenera, "IdKorisnika",
+                        "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+                else
+                {
+                    ViewData["IdKorisnika"] = new SelectList(new List<object>(), "IdKorisnika", "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+            }
+            else
+            {
+                var korisnici = await _context.Korisnik
+                    .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                    .ToListAsync();
+                ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika",
+                    "PunoIme", planIshraneTreninga.IdKorisnika);
+            }
+
             return View(planIshraneTreninga);
         }
 
@@ -85,7 +151,38 @@ namespace OptiShape.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", planIshraneTreninga.IdKorisnika);
+
+            // Postavi SelectList na isti način kao i u Create akciji
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity.Name;
+                var trener = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener != null)
+                {
+                    var korisniciTrenera = await _context.Korisnik
+                        .Where(k => k.IdTrenera == trener.IdKorisnika)
+                        .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                        .ToListAsync();
+
+                    ViewData["IdKorisnika"] = new SelectList(korisniciTrenera, "IdKorisnika",
+                        "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+                else
+                {
+                    ViewData["IdKorisnika"] = new SelectList(new List<object>(), "IdKorisnika", "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+            }
+            else
+            {
+                var korisnici = await _context.Korisnik
+                    .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                    .ToListAsync();
+                ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika",
+                    "PunoIme", planIshraneTreninga.IdKorisnika);
+            }
+
             return View(planIshraneTreninga);
         }
 
@@ -120,7 +217,38 @@ namespace OptiShape.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", planIshraneTreninga.IdKorisnika);
+
+            // Ponovno postavi SelectList ako validacija ne uspije
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity.Name;
+                var trener = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener != null)
+                {
+                    var korisniciTrenera = await _context.Korisnik
+                        .Where(k => k.IdTrenera == trener.IdKorisnika)
+                        .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                        .ToListAsync();
+
+                    ViewData["IdKorisnika"] = new SelectList(korisniciTrenera, "IdKorisnika",
+                        "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+                else
+                {
+                    ViewData["IdKorisnika"] = new SelectList(new List<object>(), "IdKorisnika", "PunoIme", planIshraneTreninga.IdKorisnika);
+                }
+            }
+            else
+            {
+                var korisnici = await _context.Korisnik
+                    .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                    .ToListAsync();
+                ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika",
+                    "PunoIme", planIshraneTreninga.IdKorisnika);
+            }
+
             return View(planIshraneTreninga);
         }
 
