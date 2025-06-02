@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OptiShape.Models
 {
@@ -64,5 +65,10 @@ namespace OptiShape.Models
         [Phone(ErrorMessage = "Unesite ispravan broj telefona.")]
         [DisplayName("Broj telefona")]
         public string BrojTelefona { get; set; }
+
+        public int? IdTrenera { get; set; }
+
+        [ForeignKey("IdTrenera")]
+        public Korisnik Trener { get; set; }
     }
 }
