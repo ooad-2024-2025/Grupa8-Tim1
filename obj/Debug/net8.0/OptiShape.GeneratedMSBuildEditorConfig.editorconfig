@@ -120,8 +120,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVJVHJlbmluZ2FcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/omsak/source/repos/ooad-2024-2025/Grupa8-Tim1/Views/PlanIshraneITreninga/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVJVHJlbmluZ2FcSW5kZXguY3NodG1s
+[C:/Users/omsak/source/repos/ooad-2024-2025/Grupa8-Tim1/Views/PlanIshraneITreninga/IndexAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVJVHJlbmluZ2FcSW5kZXhBZG1pbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/omsak/source/repos/ooad-2024-2025/Grupa8-Tim1/Views/PlanIshraneITreninga/IndexKorisnik.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGxhbklzaHJhbmVJVHJlbmluZ2FcSW5kZXhLb3Jpc25pay5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/omsak/source/repos/ooad-2024-2025/Grupa8-Tim1/Views/Shared/Error.cshtml]

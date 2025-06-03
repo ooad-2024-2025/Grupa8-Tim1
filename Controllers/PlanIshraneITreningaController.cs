@@ -24,9 +24,34 @@ namespace OptiShape.Controllers
         // GET: PlanIshraneITreninga
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.PlanIshraneTreninga.Include(p => p.Korisnik);
-            return View(await applicationDbContext.ToListAsync());
+            if (User.IsInRole("Administrator") || User.IsInRole("Trener"))
+            {
+                var sviPlanovi = await _context.PlanIshraneTreninga
+                    .Include(p => p.Korisnik)
+                    .ToListAsync();
+
+                return View("IndexAdmin", sviPlanovi);
+            }
+            else if (User.IsInRole("Korisnik"))
+            {
+                var email = User.Identity.Name;
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                if (korisnik != null)
+                {
+                    var njegoviPlanovi = await _context.PlanIshraneTreninga
+                        .Include(p => p.Korisnik)
+                        .Where(p => p.IdKorisnika == korisnik.IdKorisnika)
+                        .ToListAsync();
+
+                    return View("IndexKorisnik", njegoviPlanovi);
+                }
+            }
+
+            return Unauthorized();
         }
+
+
 
         // GET: PlanIshraneITreninga/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -48,7 +73,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: PlanIshraneITreninga/Create
-        [Authorize(Roles = "Administrator, Trener")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create()
         {
             // Provjera uloge i filtriranje korisnika u skladu s tim
@@ -93,7 +118,7 @@ namespace OptiShape.Controllers
         // POST: PlanIshraneITreninga/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator, Trener")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create([Bind("IdPlana,DatumKreiranja,Kalorije,Protein,Ugljikohidrati,Masti,IdKorisnika")] PlanIshraneTreninga planIshraneTreninga)
         {
             if (ModelState.IsValid)
@@ -162,7 +187,10 @@ namespace OptiShape.Controllers
                 return NotFound();
             }
 
-            var planIshraneTreninga = await _context.PlanIshraneTreninga.FindAsync(id);
+            var planIshraneTreninga = await _context.PlanIshraneTreninga
+    .Include(p => p.Korisnik)
+    .FirstOrDefaultAsync(p => p.IdPlana == id);
+
             if (planIshraneTreninga == null)
             {
                 return NotFound();
@@ -308,10 +336,16 @@ namespace OptiShape.Controllers
         [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+
+           
+
             var planIshraneTreninga = await _context.PlanIshraneTreninga.FindAsync(id);
             if (planIshraneTreninga != null)
             {
                 _context.PlanIshraneTreninga.Remove(planIshraneTreninga);
+                TempData["DeleteMessage"] = "Plan je uspješno obrisan.";
+
+
             }
 
             await _context.SaveChangesAsync();

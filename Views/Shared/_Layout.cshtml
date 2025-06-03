@@ -215,8 +215,11 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="PlanIshraneITreninga" asp-action="Index">Planovi ishrane</a>
-                            </li>
+    <a class="nav-link" asp-controller="PlanIshraneITreninga" asp-action="Index">
+        @(User.IsInRole("Korisnik") ? "Moj plan ishrane" : "Planovi ishrane")
+    </a>
+</li>
+
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="StatistikeNapretka" asp-action="Index">Statistike napretka</a>
                             </li>
