@@ -24,34 +24,36 @@ namespace OptiShape.Controllers
         // GET: StatistikeNapretka
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.StatistikeNapretka.Include(s => s.Korisnik);
-            return View(await applicationDbContext.ToListAsync());
+            var statistike = await _context.StatistikeNapretka
+                .Include(s => s.Korisnik)
+                .ToListAsync();
+            return View(statistike);
         }
 
         // GET: StatistikeNapretka/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var statistikeNapretka = await _context.StatistikeNapretka
+            var statistika = await _context.StatistikeNapretka
                 .Include(s => s.Korisnik)
                 .FirstOrDefaultAsync(m => m.IdZapisa == id);
-            if (statistikeNapretka == null)
-            {
-                return NotFound();
-            }
 
-            return View(statistikeNapretka);
+            if (statistika == null)
+                return NotFound();
+
+            return View(statistika);
         }
 
         // GET: StatistikeNapretka/Create
         [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika");
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme");
             return View();
         }
 
@@ -65,9 +67,23 @@ namespace OptiShape.Controllers
             {
                 _context.Add(statistikeNapretka);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Statistika napretka je uspješno dodana.";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", statistikeNapretka.IdKorisnika);
+
+            // Prikaz grešaka u konzoli (debug)
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", statistikeNapretka.IdKorisnika);
             return View(statistikeNapretka);
         }
 
@@ -76,17 +92,17 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var statistikeNapretka = await _context.StatistikeNapretka.FindAsync(id);
-            if (statistikeNapretka == null)
-            {
+            var statistika = await _context.StatistikeNapretka.FindAsync(id);
+            if (statistika == null)
                 return NotFound();
-            }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", statistikeNapretka.IdKorisnika);
-            return View(statistikeNapretka);
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", statistika.IdKorisnika);
+            return View(statistika);
         }
 
         // POST: StatistikeNapretka/Edit/5
@@ -96,9 +112,7 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("IdZapisa,Datum,Tezina,Bmi,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
         {
             if (id != statistikeNapretka.IdZapisa)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -106,21 +120,31 @@ namespace OptiShape.Controllers
                 {
                     _context.Update(statistikeNapretka);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Statistika napretka je uspješno ažurirana.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!StatistikeNapretkaExists(statistikeNapretka.IdZapisa))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", statistikeNapretka.IdKorisnika);
+
+            // Prikaz grešaka u konzoli (debug)
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", statistikeNapretka.IdKorisnika);
             return View(statistikeNapretka);
         }
 
@@ -129,19 +153,16 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var statistikeNapretka = await _context.StatistikeNapretka
+            var statistika = await _context.StatistikeNapretka
                 .Include(s => s.Korisnik)
                 .FirstOrDefaultAsync(m => m.IdZapisa == id);
-            if (statistikeNapretka == null)
-            {
-                return NotFound();
-            }
 
-            return View(statistikeNapretka);
+            if (statistika == null)
+                return NotFound();
+
+            return View(statistika);
         }
 
         // POST: StatistikeNapretka/Delete/5
@@ -150,12 +171,12 @@ namespace OptiShape.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var statistikeNapretka = await _context.StatistikeNapretka.FindAsync(id);
-            if (statistikeNapretka != null)
+            var statistika = await _context.StatistikeNapretka.FindAsync(id);
+            if (statistika != null)
             {
-                _context.StatistikeNapretka.Remove(statistikeNapretka);
+                _context.StatistikeNapretka.Remove(statistika);
+                TempData["DeleteMessage"] = "Statistika napretka je uspješno obrisana.";
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
