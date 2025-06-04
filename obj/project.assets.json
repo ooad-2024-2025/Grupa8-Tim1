@@ -8358,23 +8358,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\omsak\\.nuget\\packages\\": {},
+    "C:\\Users\\Korisnik\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\omsak\\source\\repos\\ooad-2024-2025\\Grupa8-Tim1\\OptiShape.csproj",
+      "projectUniqueName": "C:\\Desktop\\OptiShape\\OptiShape.csproj",
       "projectName": "OptiShape",
-      "projectPath": "C:\\Users\\omsak\\source\\repos\\ooad-2024-2025\\Grupa8-Tim1\\OptiShape.csproj",
-      "packagesPath": "C:\\Users\\omsak\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\omsak\\source\\repos\\ooad-2024-2025\\Grupa8-Tim1\\obj\\",
+      "projectPath": "C:\\Desktop\\OptiShape\\OptiShape.csproj",
+      "packagesPath": "C:\\Users\\Korisnik\\.nuget\\packages\\",
+      "outputPath": "C:\\Desktop\\OptiShape\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\omsak\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Korisnik\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

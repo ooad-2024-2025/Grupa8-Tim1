@@ -558,7 +558,6 @@ C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.csproj.Up2Date
 C:\Desktop\OptiShape\obj\Debug\net8.0\OptiShape.genruntimeconfig.cache
 C:\Desktop\OptiShape\obj\Debug\net8.0\ref\OptiShape.dll
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.csproj.AssemblyReference.cache
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.AssemblyInfoInputs.cache
@@ -852,3 +851,4 @@ C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShap
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.genruntimeconfig.cache
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\ref\OptiShape.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
