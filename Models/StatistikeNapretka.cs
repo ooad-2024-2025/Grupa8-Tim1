@@ -21,7 +21,7 @@ namespace OptiShape.Models
         public double Tezina { get; set; }
 
         [Required(ErrorMessage = "BMI je obavezan.")]
-        [Range(10, 60, ErrorMessage = "BMI mora biti između 10 i 60.")]
+        [Range(0, 100, ErrorMessage = "BMI mora biti između 10 i 60.")]
         [Display(Name = "BMI")]
         public double Bmi { get; set; }
 

@@ -61,8 +61,29 @@ namespace OptiShape.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Create([Bind("IdZapisa,Datum,Tezina,Bmi,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
+        public async Task<IActionResult> Create([Bind("IdZapisa,Datum,Tezina,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
         {
+            // Pronađi korisnika i uzmi visinu
+            var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == statistikeNapretka.IdKorisnika);
+
+            if (korisnik == null)
+            {
+                ModelState.AddModelError("IdKorisnika", "Korisnik nije pronađen.");
+            }
+            else
+            {
+                // BMI = tezina (kg) / (visina (m))^2
+                var visinaMetri = korisnik.Visina / 100.0;
+                if (visinaMetri > 0)
+                {
+                    statistikeNapretka.Bmi = Math.Round(statistikeNapretka.Tezina / (visinaMetri * visinaMetri), 2);
+                }
+                else
+                {
+                    ModelState.AddModelError("IdKorisnika", "Visina korisnika nije validna.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(statistikeNapretka);
@@ -109,10 +130,30 @@ namespace OptiShape.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Edit(int id, [Bind("IdZapisa,Datum,Tezina,Bmi,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
+        public async Task<IActionResult> Edit(int id, [Bind("IdZapisa,Datum,Tezina,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
         {
             if (id != statistikeNapretka.IdZapisa)
                 return NotFound();
+
+            // Pronađi korisnika i uzmi visinu
+            var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == statistikeNapretka.IdKorisnika);
+
+            if (korisnik == null)
+            {
+                ModelState.AddModelError("IdKorisnika", "Korisnik nije pronađen.");
+            }
+            else
+            {
+                var visinaMetri = korisnik.Visina / 100.0;
+                if (visinaMetri > 0)
+                {
+                    statistikeNapretka.Bmi = Math.Round(statistikeNapretka.Tezina / (visinaMetri * visinaMetri), 2);
+                }
+                else
+                {
+                    ModelState.AddModelError("IdKorisnika", "Visina korisnika nije validna.");
+                }
+            }
 
             if (ModelState.IsValid)
             {
