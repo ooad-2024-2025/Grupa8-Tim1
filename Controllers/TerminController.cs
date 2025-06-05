@@ -24,25 +24,24 @@ namespace OptiShape.Controllers
         // GET: Termin
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Termin.Include(t => t.Korisnik);
-            return View(await applicationDbContext.ToListAsync());
+            var termini = await _context.Termin
+                .Include(t => t.Korisnik)
+                .ToListAsync();
+            return View(termini);
         }
 
         // GET: Termin/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var termin = await _context.Termin
                 .Include(t => t.Korisnik)
                 .FirstOrDefaultAsync(m => m.IdTermina == id);
+
             if (termin == null)
-            {
                 return NotFound();
-            }
 
             return View(termin);
         }
@@ -51,7 +50,10 @@ namespace OptiShape.Controllers
         [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika");
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme");
             return View();
         }
 
@@ -65,9 +67,23 @@ namespace OptiShape.Controllers
             {
                 _context.Add(termin);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Termin je uspješno dodat.";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", termin.IdKorisnika);
+
+            // Prikaz grešaka u konzoli (debug)
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
             return View(termin);
         }
 
@@ -76,16 +92,16 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var termin = await _context.Termin.FindAsync(id);
             if (termin == null)
-            {
                 return NotFound();
-            }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", termin.IdKorisnika);
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
             return View(termin);
         }
 
@@ -96,9 +112,7 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("IdTermina,Datum,IdKorisnika")] Termin termin)
         {
             if (id != termin.IdTermina)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
@@ -106,21 +120,31 @@ namespace OptiShape.Controllers
                 {
                     _context.Update(termin);
                     await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "Termin je uspješno ažuriran.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!TerminExists(termin.IdTermina))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdKorisnika"] = new SelectList(_context.Korisnik, "IdKorisnika", "IdKorisnika", termin.IdKorisnika);
+
+            // Prikaz grešaka u konzoli (debug)
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+            var korisnici = _context.Korisnik
+                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
+                .ToList();
+            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
             return View(termin);
         }
 
@@ -129,17 +153,14 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var termin = await _context.Termin
                 .Include(t => t.Korisnik)
                 .FirstOrDefaultAsync(m => m.IdTermina == id);
+
             if (termin == null)
-            {
                 return NotFound();
-            }
 
             return View(termin);
         }
@@ -154,8 +175,8 @@ namespace OptiShape.Controllers
             if (termin != null)
             {
                 _context.Termin.Remove(termin);
+                TempData["SuccessMessage"] = "Termin je uspješno obrisan.";
             }
-
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

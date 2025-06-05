@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace OptiShape.Models
 {
@@ -7,10 +8,18 @@ namespace OptiShape.Models
     {
         [Key]
         public int IdTermina { get; set; }
+
+        [Required(ErrorMessage = "Datum termina je obavezan.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Datum termina")]
         public DateTime Datum { get; set; }
 
         [ForeignKey("Korisnik")]
+        [Required(ErrorMessage = "Odaberite korisnika.")]
+        [Display(Name = "Korisnik")]
         public int IdKorisnika { get; set; }
-        public Korisnik Korisnik { get; set; }
+
+        [ValidateNever]
+        public Korisnik? Korisnik { get; set; }
     }
 }
