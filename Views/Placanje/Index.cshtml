@@ -23,24 +23,58 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             overflow: hidden;
+            table-layout: fixed; /* This helps create uniform columns */
         }
 
             .table th {
                 background-color: #e0f2fe;
                 color: #1e3a8a;
                 font-weight: 700;
-                padding: 14px;
+                padding: 12px 10px;
                 text-align: left;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .table td {
                 background-color: #f9fafb;
-                padding: 14px;
+                padding: 10px;
                 border-top: 1px solid #e2e8f0;
                 vertical-align: middle;
-                font-size: 0.95rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
+
+                /* Column width settings */
+                .table th:nth-child(1), .table td:nth-child(1) {
+                    width: 22%;
+                }
+                /* Korisnik */
+                .table th:nth-child(2), .table td:nth-child(2) {
+                    width: 15%;
+                }
+                /* Datum */
+                .table th:nth-child(3), .table td:nth-child(3) {
+                    width: 12%;
+                }
+                /* Iznos */
+                .table th:nth-child(4), .table td:nth-child(4) {
+                    width: 10%;
+                }
+                /* Popust */
+                .table th:nth-child(5), .table td:nth-child(5) {
+                    width: 15%;
+                }
+                /* Način plaćanja */
+                .table th:nth-child(6), .table td:nth-child(6) {
+                    width: 26%;
+                    text-align: center;
+                }
+        /* Akcije */
 
         .table-hover tbody tr:hover td {
             background-color: #f0f9ff !important;
@@ -143,7 +177,7 @@
                         <td>
                             @if (item.Korisnik != null)
                             {
-                                @($"{item.Korisnik.Ime} {item.Korisnik.Prezime}")
+                                <strong>@item.Korisnik.Ime @item.Korisnik.Prezime</strong>
                             }
                             else
                             {

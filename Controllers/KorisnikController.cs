@@ -36,7 +36,9 @@ namespace OptiShape.Controllers
             }
 
             var korisnik = await _context.Korisnik
+                .Include(k => k.Trener)  // Make sure we include the Trainer relationship
                 .FirstOrDefaultAsync(m => m.IdKorisnika == id);
+
             if (korisnik == null)
             {
                 return NotFound();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -69,6 +70,7 @@ namespace OptiShape.Models
         public int? IdTrenera { get; set; }
 
         [ForeignKey("IdTrenera")]
-        public Korisnik Trener { get; set; }
+        [ValidateNever]
+        public Korisnik? Trener { get; set; }
     }
 }

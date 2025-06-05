@@ -22,7 +22,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Password.RequireLowercase = false;        // Ne zahtijeva mala slova
     options.Password.RequireUppercase = false;        // Ne zahtijeva velika slova
     options.Password.RequireNonAlphanumeric = false;  // Ne zahtijeva specijalne znakove
-    options.Password.RequiredLength = 6;              // Minimalna dužina 6 znakova
+    options.Password.RequiredLength = 6;              // Minimalna duï¿½ina 6 znakova
 })
      .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();

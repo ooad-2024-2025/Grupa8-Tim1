@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("OptiShape")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+243db4cb0b728e585122fc11ff95bd52b061fac9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cc9336acd9a816f9aaa2af6aa3fedaf278640d9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("OptiShape")]
 [assembly: System.Reflection.AssemblyTitleAttribute("OptiShape")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

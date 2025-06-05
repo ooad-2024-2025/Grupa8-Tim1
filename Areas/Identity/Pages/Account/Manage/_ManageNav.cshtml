@@ -1,0 +1,71 @@
+﻿@using OptiShape.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+
+<style>
+    .manage-nav {
+        background-color: white;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-pills .nav-link {
+        color: #334155;
+        border-radius: 8px;
+        padding: 10px 15px;
+        margin-bottom: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+        .nav-pills .nav-link:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #2563eb;
+            color: white;
+        }
+
+    .nav-icon {
+        margin-right: 8px;
+    }
+</style>
+
+<div class="manage-nav">
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">
+                <span class="nav-icon">👤</span> Profil
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">
+                <span class="nav-icon">📧</span> Email
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">
+                <span class="nav-icon">🔒</span> Šifra
+            </a>
+        </li>
+        @if (hasExternalLogins)
+        {
+            <li id="external-logins" class="nav-item">
+                <a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">
+                    <span class="nav-icon">🔗</span> Vanjska prijavljivanja
+                </a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">
+                <span class="nav-icon">🔐</span> Dvofaktorska autentifikacija
+            </a>
+        </li>
+        <!-- Removed the Personal data link -->
+    </ul>
+</div>
