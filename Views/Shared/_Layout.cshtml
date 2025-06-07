@@ -128,33 +128,13 @@
                 transform: scale(1.08);
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             }
-
-
-
-
-
-
-
-
-
-
-
-   
-
     </style>
-
-    
-   
-
-
-    
 
     @RenderSection("Styles", required: false)
 </head>  
 
 <body>  
    
-
     <header> <!-- NAVBAR -->
         <nav class="navbar navbar-expand-sm @(ViewData["FixedNavbar"] as bool? == true ? "fixed-top custom-navbar shadow-sm" : "custom-navbar-alt")">
             <div class="container-fluid">
@@ -177,9 +157,6 @@
 
                 }
 
-
-
-
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -198,13 +175,6 @@
                             </li>
                         }
 
-
-
-
-
-
-
-
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administrator")) /* REKSTRIKCIJA NA KORISNICI (SAMO ZA ADMINA) */
                         {
                             <li class="nav-item">
@@ -215,10 +185,10 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-    <a class="nav-link" asp-controller="PlanIshraneITreninga" asp-action="Index">
-        @(User.IsInRole("Korisnik") ? "Moj plan ishrane" : "Planovi ishrane")
-    </a>
-</li>
+                                <a class="nav-link" asp-controller="PlanIshraneITreninga" asp-action="Index">
+                                    @(User.IsInRole("Korisnik") ? "Moj plan ishrane" : "Planovi ishrane")
+                                </a>
+                            </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="StatistikeNapretka" asp-action="Index">Statistike napretka</a>
@@ -226,9 +196,12 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Termin" asp-action="Index">Termini</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Placanje" asp-action="Index">Plaćanje</a>
-                            </li>
+                            @if (User.IsInRole("Administrator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Placanje" asp-action="Index">Plaćanje</a>
+                                </li>
+                            }
                         }
 
 
@@ -261,19 +234,6 @@
         @RenderBody()
     </main>
 
-
-
-
-
-
-<!-- vezano za fixirani navbar-->
-
-
-    
-
-
-    
-
     <footer class="border-top footer text-muted">  
         <div class="container">  
             &copy; 2025 - OptiShape  
@@ -283,10 +243,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>  
     <script src="~/js/site.js" asp-append-version="true"></script>  
     @await RenderSectionAsync("Scripts", required: false)  
-  
-    
- 
-
 
 </body>  
 </html>

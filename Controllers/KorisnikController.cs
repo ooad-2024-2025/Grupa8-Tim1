@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using OptiShape.Data;
 using OptiShape.Models;
 
@@ -15,10 +16,12 @@ namespace OptiShape.Controllers
     public class KorisnikController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public KorisnikController(ApplicationDbContext context)
+        public KorisnikController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Korisnik
@@ -146,13 +149,48 @@ namespace OptiShape.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var korisnik = await _context.Korisnik.FindAsync(id);
-            if (korisnik != null)
+            if (korisnik == null)
             {
-                _context.Korisnik.Remove(korisnik);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            // Find the corresponding Identity user
+            var user = await _userManager.FindByEmailAsync(korisnik.Email);
+
+            // Start a transaction to ensure consistency
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Remove from Korisnik table
+                _context.Korisnik.Remove(korisnik);
+                await _context.SaveChangesAsync();
+
+                // If the corresponding Identity user exists, delete it too
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (!result.Succeeded)
+                    {
+                        // If Identity deletion fails, roll back and handle the error
+                        await transaction.RollbackAsync();
+                        TempData["ErrorMessage"] = "Greška prilikom brisanja korisničkog računa.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
+                // Commit the transaction if everything succeeded
+                await transaction.CommitAsync();
+                TempData["SuccessMessage"] = "Korisnik je uspješno izbrisan.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Roll back on any exception
+                await transaction.RollbackAsync();
+                TempData["ErrorMessage"] = "Došlo je do greške: " + ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool KorisnikExists(int id)

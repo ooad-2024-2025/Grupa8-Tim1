@@ -33,13 +33,15 @@ namespace OptiShape.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -47,6 +49,7 @@ namespace OptiShape.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         /// <summary>
@@ -174,6 +177,9 @@ namespace OptiShape.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    // Add user to "Korisnik" role
+                    await _userManager.AddToRoleAsync(user, "Korisnik");
+
                     // Kreiranje zapisa u Korisnik tabeli sa podacima iz ApplicationUser
                     var korisnik = new Korisnik
                     {
@@ -190,10 +196,11 @@ namespace OptiShape.Areas.Identity.Pages.Account
                         BrojTelefona = Input.BrojTelefona
                     };
 
-                    // Dohvat konteksta baze podataka kroz dependency injection
-                    var dbContext = HttpContext.RequestServices.GetRequiredService<ApplicationDbContext>();
-                    dbContext.Korisnik.Add(korisnik);
-                    await dbContext.SaveChangesAsync();
+                    _context.Korisnik.Add(korisnik);
+                    await _context.SaveChangesAsync();
+
+                    // Generate automatic personalized nutrition plan
+                    await CreateInitialPlan(user, korisnik);
 
                     // Ostatak originalnog koda
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -206,7 +213,7 @@ namespace OptiShape.Areas.Identity.Pages.Account
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Potvrdite svoju email adresu",
-    $"Molimo potvrdite vaš račun klikom <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ovdje</a>.");
+                        $"Molimo potvrdite vaš račun klikom <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>ovdje</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -249,6 +256,80 @@ namespace OptiShape.Areas.Identity.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+
+        /// <summary>
+        /// Creates an initial personalized nutrition and training plan for a new user
+        /// </summary>
+        private async Task CreateInitialPlan(ApplicationUser user, Korisnik korisnik)
+        {
+            // Calculate age based on date of birth
+            int age = DateTime.Now.Year - user.DatumRodjenja.Year;
+            if (DateTime.Now.DayOfYear < user.DatumRodjenja.DayOfYear)
+                age--;
+
+            // Calculate BMR (Basal Metabolic Rate) using Mifflin-St Jeor Equation
+            double bmr;
+            if (user.Spol == Spol.MUSKO)
+            {
+                bmr = 10 * user.Tezina + 6.25 * user.Visina - 5 * age + 5;
+            }
+            else
+            {
+                bmr = 10 * user.Tezina + 6.25 * user.Visina - 5 * age - 161;
+            }
+
+            // Adjust calories based on goal
+            int totalCalories;
+            switch (user.Cilj)
+            {
+                case Cilj.MRSANJE:
+                    totalCalories = (int)(bmr * 0.85); // 15% calorie deficit for weight loss
+                    break;
+                case Cilj.NABIJANJEMISICNEMASE:
+                    totalCalories = (int)(bmr * 1.15); // 15% calorie surplus for muscle gain
+                    break;
+                default:
+                    totalCalories = (int)bmr; // Maintenance by default
+                    break;
+            }
+
+            // Calculate macronutrients based on goal
+            int protein, carbs, fats;
+
+            if (user.Cilj == Cilj.MRSANJE)
+            {
+                // Higher protein, moderate fat, lower carbs for fat loss
+                protein = (int)(user.Tezina * 2.2); // 2.2g per kg bodyweight
+                fats = (int)((totalCalories * 0.25) / 9); // 25% of calories from fat (9 cal/g)
+                carbs = (int)((totalCalories - (protein * 4) - (fats * 9)) / 4); // Remaining calories from carbs (4 cal/g)
+            }
+            else // NABIJANJEMISICNEMASE
+            {
+                // High protein, higher carbs, moderate fat for muscle gain
+                protein = (int)(user.Tezina * 2.0); // 2.0g per kg bodyweight
+                fats = (int)((totalCalories * 0.20) / 9); // 20% of calories from fat
+                carbs = (int)((totalCalories - (protein * 4) - (fats * 9)) / 4); // Remaining calories from carbs
+            }
+
+            // Ensure we don't get negative values due to calculation rounding
+            carbs = Math.Max(carbs, 30);
+            protein = Math.Max(protein, 50);
+            fats = Math.Max(fats, 20);
+
+            // Create the plan
+            var plan = new PlanIshraneTreninga
+            {
+                IdKorisnika = korisnik.IdKorisnika,
+                DatumKreiranja = DateTime.Now,
+                Kalorije = totalCalories,
+                Protein = protein,
+                Ugljikohidrati = carbs,
+                Masti = fats
+            };
+
+            _context.PlanIshraneTreninga.Add(plan);
+            await _context.SaveChangesAsync();
         }
     }
 }
