@@ -56,7 +56,7 @@ namespace OptiShape.Controllers
                 _logger.LogInformation($"Sending student application email for user: {userName}");
 
                 // Your email configuration
-                var fromAddress = new MailAddress("your-email@example.com", "OptiShape App");
+                var fromAddress = new MailAddress("ooooaadd1@gmail.com", "OptiShape App");
                 var toAddress = new MailAddress("ooooaadd1@gmail.com", "Admin");
 
                 var smtp = new SmtpClient

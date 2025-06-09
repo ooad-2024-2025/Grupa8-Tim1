@@ -22,10 +22,23 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Password.RequireLowercase = false;        // Ne zahtijeva mala slova
     options.Password.RequireUppercase = false;        // Ne zahtijeva velika slova
     options.Password.RequireNonAlphanumeric = false;  // Ne zahtijeva specijalne znakove
-    options.Password.RequiredLength = 6;              // Minimalna du�ina 6 znakova
+    options.Password.RequiredLength = 6;              // Minimalna dužina 6 znakova
 })
      .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Configure cookie authentication to respect "Remember Me" checkbox
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // When Remember Me is checked, cookie will persist for 14 days
+    options.ExpireTimeSpan = TimeSpan.FromDays(14);
+    options.SlidingExpiration = true;
+
+    // This makes the auth cookie expire with browser session when Remember Me is not checked
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 builder.Services.AddControllersWithViews()
 
 
