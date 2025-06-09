@@ -1,5 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OptiShape.Data;
 using OptiShape.Models;
 using System.Diagnostics;
 using System.Net;
@@ -10,10 +13,12 @@ namespace OptiShape.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
         public IActionResult Index()
@@ -44,8 +49,6 @@ namespace OptiShape.Controllers
             return View();
         }
 
-
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> SendStudentRequest()
@@ -55,13 +58,12 @@ namespace OptiShape.Controllers
                 var userName = User.Identity?.Name;
                 _logger.LogInformation($"Sending student application email for user: {userName}");
 
-                // Your email configuration
                 var fromAddress = new MailAddress("ooooaadd1@gmail.com", "OptiShape App");
                 var toAddress = new MailAddress("ooooaadd1@gmail.com", "Admin");
 
                 var smtp = new SmtpClient
                 {
-                    Host = "smtp.gmail.com",  // Using Gmail SMTP server
+                    Host = "smtp.gmail.com",
                     Port = 587,
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
@@ -81,16 +83,67 @@ namespace OptiShape.Controllers
                 {
                     await Task.Run(() => smtp.Send(message));
                     _logger.LogInformation("Email successfully sent");
-                    TempData["Success"] = "Zahtjev je uspje�no poslan. O?ekujte odgovor u narednih nekoliko dana.";
+                    TempData["Success"] = "Zahtjev je uspješno poslan. Očekujte odgovor u narednih nekoliko dana.";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to send email: {ex.Message}");
-                TempData["Error"] = $"Gre�ka prilikom slanja zahtjeva: {ex.Message}";
+                TempData["Error"] = $"Greška prilikom slanja zahtjeva: {ex.Message}";
             }
 
             return RedirectToAction("StudentApplication");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> IzborTrenera()
+        {
+            var userEmail = User.Identity?.Name;
+            var korisnik = await _db.Korisnik.FirstOrDefaultAsync(k => k.Email == userEmail);
+
+            if (korisnik == null || korisnik.IdTrenera != null || User.IsInRole("Administrator") || User.IsInRole("Trener"))
+            {
+                return RedirectToAction("Dashboard");
+            }
+
+            var trenerIds = await _db.Korisnik
+                .Where(k => k.IdTrenera != null)
+                .Select(k => k.IdTrenera.Value)
+                .Distinct()
+                .ToListAsync();
+
+            var treneri = await _db.Korisnik
+                .Where(k => trenerIds.Contains(k.IdKorisnika))
+                .ToListAsync();
+
+            return View(treneri);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> OdaberiTrenera(int trenerId)
+        {
+            var userEmail = User.Identity?.Name;
+            var korisnik = await _db.Korisnik.FirstOrDefaultAsync(k => k.Email == userEmail);
+
+            // Provjera validnosti korisnika i trenera
+            if (korisnik == null || korisnik.IdTrenera != null)
+            {
+                return RedirectToAction("Dashboard");
+            }
+
+            var trener = await _db.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == trenerId);
+            if (trener == null)
+            {
+                TempData["Error"] = "Odabrani trener ne postoji.";
+                return RedirectToAction("IzborTrenera");
+            }
+
+            korisnik.IdTrenera = trenerId;
+            await _db.SaveChangesAsync();
+
+            TempData["Success"] = "Uspješno ste odabrali trenera!";
+            return RedirectToAction("Dashboard");
         }
     }
 }
