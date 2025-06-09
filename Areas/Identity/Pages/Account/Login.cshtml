@@ -13,10 +13,9 @@
         justify-content: center;
         align-items: start;
         padding: 60px 20px;
-        gap: 60px;
     }
 
-    .login-form, .external-login {
+    .login-form {
         background: white;
         padding: 40px;
         border-radius: 16px;
@@ -25,7 +24,7 @@
         max-width: 450px;
     }
 
-        .login-form h2, .external-login h3 {
+        .login-form h2 {
             font-weight: 700;
             margin-bottom: 25px;
             color: #1e3a8a;
@@ -44,17 +43,6 @@
                 background-color: #1d4ed8;
                 transform: translateY(-1px);
             }
-
-        .login-form a {
-            display: block;
-            margin-top: 10px;
-            color: #1e3a8a;
-            text-decoration: none;
-        }
-
-            .login-form a:hover {
-                text-decoration: underline;
-            }
 </style>
 
 <style>
@@ -68,12 +56,6 @@
         letter-spacing: -1px;
     }
 </style>
-
-
-
-
-
-
 
 <h1 class="login-title">@ViewData["Title"]</h1>
 
@@ -100,41 +82,9 @@
                 </label>
             </div>
             <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Prijavi se</button>
-
-            <a asp-page="./ForgotPassword">Zaboravili ste šifru?</a>
-            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registruj se kao novi korisnik</a>
-            <a asp-page="./ResendEmailConfirmation">Ponovo pošalji potvrdu email-a</a>
         </form>
     </div>
-
-    <div class="external-login">
-        <h3>Prijavi se putem druge usluge.</h3>
-        <hr />
-        @{
-            if ((Model.ExternalLogins?.Count ?? 0) == 0)
-            {
-                <p>
-                    Nema podešenih vanjskih autentifikacijskih servisa. Pogledajte ovaj
-                    <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
-                        članak o tome kako podesiti ASP.NET aplikaciju za prijavu putem vanjskih servisa
-                    </a>.
-                </p>
-            }
-            else
-            {
-                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                    @foreach (var provider in Model.ExternalLogins!)
-                    {
-                        <button type="submit" class="btn btn-outline-primary w-100 mb-2" name="provider" value="@provider.Name">
-                            Prijavi se koristeći @provider.DisplayName
-                        </button>
-                    }
-                </form>
-            }
-        }
-    </div>
 </div>
-
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

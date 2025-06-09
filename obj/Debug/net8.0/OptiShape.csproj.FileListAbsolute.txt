@@ -851,7 +851,6 @@ C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShap
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.genruntimeconfig.cache
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\ref\OptiShape.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Projekat\Grupa8-Tim1\bin\Debug\net8.0\appsettings.Development.json
 C:\Projekat\Grupa8-Tim1\bin\Debug\net8.0\appsettings.json
 C:\Projekat\Grupa8-Tim1\bin\Debug\net8.0\OptiShape.staticwebassets.runtime.json
@@ -1145,3 +1144,9 @@ C:\Projekat\Grupa8-Tim1\obj\Debug\net8.0\refint\OptiShape.dll
 C:\Projekat\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.pdb
 C:\Projekat\Grupa8-Tim1\obj\Debug\net8.0\OptiShape.genruntimeconfig.cache
 C:\Projekat\Grupa8-Tim1\obj\Debug\net8.0\ref\OptiShape.dll
+C:\Desktop\OptiShape\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+C:\Desktop\OptiShape\bin\Debug\net8.0\MailKit.dll
+C:\Desktop\OptiShape\bin\Debug\net8.0\MimeKit.dll
+C:\Desktop\OptiShape\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Desktop\OptiShape\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

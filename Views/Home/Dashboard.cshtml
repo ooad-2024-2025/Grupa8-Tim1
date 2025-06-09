@@ -1,9 +1,47 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using OptiShape.Models
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
     ViewData["Title"] = "Dashboard";
     ViewData["FixedNavbar"] = true;
+
+    // Get current user
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = User.IsInRole("Administrator");
+    var isTrainer = User.IsInRole("Trener");
+    var showStudentApplication = user != null && !isAdmin && !isTrainer && !user.StudentskiStatus;
 }
 
 <div class="container">
-    <h1 class="mt-5">Dobrodošli na Dashboard!</h1>
-    <p>Ovo je privatna stranica za prijavljene korisnike.</p>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="mt-5">Dobrodošli na Dashboard!</h1>
+            <p>Ovo je privatna stranica za prijavljene korisnike.</p>
+        </div>
+
+        @if (showStudentApplication)
+        {
+            <div class="col-12">
+                <div class="card border-primary mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-mortarboard-fill me-2"></i>
+                            Student ste?
+                        </h5>
+                        <p class="card-text">
+                            Kao student imate pravo na posebne pogodnosti i popuste. Aplicirajte za studentski račun
+                            kako biste ostvarili dodatne pogodnosti.
+                        </p>
+                        <a asp-controller="Home" asp-action="StudentApplication" class="btn btn-primary">
+                            Apliciraj za studentski račun
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Ovdje možete dodati dodatne kartice sa funkcionalnostima ovisno o ulozi korisnika -->
+    </div>
 </div>

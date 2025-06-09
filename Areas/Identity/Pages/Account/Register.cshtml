@@ -19,12 +19,11 @@
         .register-container {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             padding: 40px 20px 60px;
-            gap: 60px;
         }
 
-        .register-form, .external-register {
+        .register-form {
             background: white;
             padding: 40px;
             border-radius: 16px;
@@ -33,7 +32,7 @@
             max-width: 500px;
         }
 
-            .register-form h2, .external-register h3 {
+            .register-form h2 {
                 font-weight: 700;
                 margin-bottom: 25px;
                 color: #1e3a8a;
@@ -191,37 +190,12 @@
             </div>
         </form>
     </div>
-
-    <div class="external-register">
-        <h3>Koristite drugu uslugu za registraciju.</h3>
-        <hr />
-        @{
-            if ((Model.ExternalLogins?.Count ?? 0) == 0)
-            {
-                <p>
-                    Nema konfigurisanih vanjskih servisa za autentikaciju. Pogledajte ovaj
-                    <a href="https://go.microsoft.com/fwlink/?LinkID=532715">članak</a>.
-                </p>
-            }
-            else
-            {
-                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                    @foreach (var provider in Model.ExternalLogins!)
-                    {
-                        <button type="submit" class="btn btn-primary w-100 mb-2" name="provider" value="@provider.Name">
-                            Registruj se putem @provider.DisplayName
-                        </button>
-                    }
-                </form>
-            }
-        }
-    </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-                function showStep(stepNumber) {
+        function showStep(stepNumber) {
             const steps = document.querySelectorAll('.form-step');
             steps.forEach(step => {
                 step.classList.remove('active');
