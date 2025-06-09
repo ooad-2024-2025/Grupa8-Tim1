@@ -14,6 +14,23 @@
                     </h3>
                 </div>
                 <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle-fill me-2"></i>
                         Kao student ostvarujete pravo na posebne pogodnosti i popuste unutar OptiShape sistema.
@@ -38,9 +55,8 @@
                     </p>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
-                        <form method="post" asp-page-handler="SendStudentRequest" enctype="multipart/form-data" class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                        <form method="post" asp-controller="Home" asp-action="SendStudentRequest" enctype="multipart/form-data" class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
                             <input type="hidden" name="Ime" value="@User.Identity.Name" />
-                            <!-- Dodaj polja za ime, prezime, korisničko ime, i upload dokumenata po potrebi -->
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="bi bi-envelope-fill me-2"></i>
                                 Pošalji zahtjev putem e-maila
