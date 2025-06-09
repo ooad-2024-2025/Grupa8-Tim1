@@ -187,16 +187,22 @@
                         <td class="d-none d-lg-table-cell">@item.Masti</td>
                         <td>
                             <div class="btn-group">
-                                @if (User.IsInRole("Administrator") || User.IsInRole("Trener"))
+                                @if (User.IsInRole("Administrator"))
                                 {
                                     <a asp-action="Edit" asp-route-id="@item.IdPlana" class="btn btn-edit">Uredi</a>
                                     <a asp-action="Details" asp-route-id="@item.IdPlana" class="btn btn-details">Detalji</a>
                                     <a asp-action="Delete" asp-route-id="@item.IdPlana" class="btn btn-delete">Obriši</a>
                                 }
+                                else if (User.IsInRole("Trener"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IdPlana" class="btn btn-edit">Uredi</a>
+                                    <a asp-action="Details" asp-route-id="@item.IdPlana" class="btn btn-details">Detalji</a>
+                                }
                                 else
                                 {
                                     <a asp-action="Details" asp-route-id="@item.IdPlana" class="btn btn-details">Detalji</a>
                                 }
+
                             </div>
                         </td>
 

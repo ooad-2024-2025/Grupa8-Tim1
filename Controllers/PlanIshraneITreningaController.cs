@@ -11,6 +11,8 @@ using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
+
+
     [Authorize(Roles = "Administrator, Korisnik, Trener")]
     public class PlanIshraneITreningaController : Controller
     {
@@ -21,10 +23,12 @@ namespace OptiShape.Controllers
             _context = context;
         }
 
+
+
         // GET: PlanIshraneITreninga
         public async Task<IActionResult> Index()
         {
-            if (User.IsInRole("Administrator") || User.IsInRole("Trener"))
+            if (User.IsInRole("Administrator"))
             {
                 var sviPlanovi = await _context.PlanIshraneTreninga
                     .Include(p => p.Korisnik)
@@ -32,9 +36,26 @@ namespace OptiShape.Controllers
 
                 return View("IndexAdmin", sviPlanovi);
             }
+            else if (User.IsInRole("Trener"))
+            {
+                var email = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                if (trener != null)
+                {
+                    var planovi = await _context.PlanIshraneTreninga
+                        .Include(p => p.Korisnik)
+                        .Where(p => p.Korisnik != null && p.Korisnik.IdTrenera == trener.IdKorisnika)
+                        .ToListAsync();
+
+                    return View("IndexAdmin", planovi);
+                }
+
+                return Unauthorized();
+            }
             else if (User.IsInRole("Korisnik"))
             {
-                var email = User.Identity.Name;
+                var email = User.Identity?.Name;
                 var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
 
                 if (korisnik != null)
@@ -53,6 +74,8 @@ namespace OptiShape.Controllers
 
 
 
+
+
         // GET: PlanIshraneITreninga/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -68,6 +91,18 @@ namespace OptiShape.Controllers
             {
                 return NotFound();
             }
+
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener == null || planIshraneTreninga.Korisnik?.IdTrenera != trener.IdKorisnika)
+                {
+                    return Forbid(); // zabrani pristup ako korisnik nije njegov
+                }
+            }
+
 
             return View(planIshraneTreninga);
         }
@@ -196,6 +231,18 @@ namespace OptiShape.Controllers
                 return NotFound();
             }
 
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                if (trener == null || planIshraneTreninga.Korisnik?.IdTrenera != trener.IdKorisnika)
+                {
+                    return Forbid(); // zabrani uređivanje ako nije njegov korisnik
+                }
+            }
+
+
             // Postavi SelectList na isti način kao i u Create akciji
             if (User.IsInRole("Trener"))
             {
@@ -262,6 +309,20 @@ namespace OptiShape.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            if (User.IsInRole("Trener"))
+            {
+                var trenerEmail = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == trenerEmail);
+
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == planIshraneTreninga.IdKorisnika);
+
+                if (trener == null || korisnik?.IdTrenera != trener.IdKorisnika)
+                {
+                    return Forbid();
+                }
+            }
+
+
             if (!ModelState.IsValid)
             {
                 foreach (var entry in ModelState)
@@ -314,6 +375,11 @@ namespace OptiShape.Controllers
         [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Delete(int? id)
         {
+            if (User.IsInRole("Trener"))
+            {
+                return Forbid(); // trenerima zabranjeno
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -322,6 +388,7 @@ namespace OptiShape.Controllers
             var planIshraneTreninga = await _context.PlanIshraneTreninga
                 .Include(p => p.Korisnik)
                 .FirstOrDefaultAsync(m => m.IdPlana == id);
+
             if (planIshraneTreninga == null)
             {
                 return NotFound();
@@ -330,27 +397,30 @@ namespace OptiShape.Controllers
             return View(planIshraneTreninga);
         }
 
+
         // POST: PlanIshraneITreninga/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-
-           
-
-            var planIshraneTreninga = await _context.PlanIshraneTreninga.FindAsync(id);
-            if (planIshraneTreninga != null)
+            if (User.IsInRole("Trener"))
             {
-                _context.PlanIshraneTreninga.Remove(planIshraneTreninga);
-                TempData["DeleteMessage"] = "Plan je uspješno obrisan.";
-
-
+                return Forbid(); // trenerima zabranjeno
             }
 
-            await _context.SaveChangesAsync();
+            var plan = await _context.PlanIshraneTreninga.FindAsync(id);
+
+            if (plan != null)
+            {
+                _context.PlanIshraneTreninga.Remove(plan);
+                TempData["DeleteMessage"] = "Plan je uspješno obrisan.";
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool PlanIshraneTreningaExists(int id)
         {
