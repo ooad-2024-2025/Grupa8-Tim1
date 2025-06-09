@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using OptiShape.Data;
 using OptiShape.Models;
 
@@ -15,19 +16,46 @@ namespace OptiShape.Controllers
     public class StatistikeNapretkaController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public StatistikeNapretkaController(ApplicationDbContext context)
+        public StatistikeNapretkaController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: StatistikeNapretka
         public async Task<IActionResult> Index()
         {
-            var statistike = await _context.StatistikeNapretka
-                .Include(s => s.Korisnik)
-                .ToListAsync();
-            return View(statistike);
+            // For admins, show all records
+            if (User.IsInRole("Administrator"))
+            {
+                var statistike = await _context.StatistikeNapretka
+                    .Include(s => s.Korisnik)
+                    .ToListAsync();
+                return View(statistike);
+            }
+            else // For regular users, show only their own records
+            {
+                // Get current logged in user's email
+                var userEmail = User.Identity.Name;
+
+                // Find the corresponding Korisnik record
+                var korisnik = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == userEmail);
+
+                if (korisnik == null)
+                    return NotFound("Korisnik nije pronađen.");
+
+                var statistike = await _context.StatistikeNapretka
+                    .Include(s => s.Korisnik)
+                    .Where(s => s.IdKorisnika == korisnik.IdKorisnika)
+                    .ToListAsync();
+
+                return View(statistike);
+            }
         }
 
         // GET: StatistikeNapretka/Details/5
@@ -42,6 +70,17 @@ namespace OptiShape.Controllers
 
             if (statistika == null)
                 return NotFound();
+
+            // For regular users, check if this record belongs to them
+            if (!User.IsInRole("Administrator"))
+            {
+                var userEmail = User.Identity.Name;
+                var korisnik = await _context.Korisnik
+                    .FirstOrDefaultAsync(k => k.Email == userEmail);
+
+                if (korisnik == null || statistika.IdKorisnika != korisnik.IdKorisnika)
+                    return Forbid();
+            }
 
             return View(statistika);
         }

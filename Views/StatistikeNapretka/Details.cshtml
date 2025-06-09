@@ -118,7 +118,10 @@
     </div>
 
     <div class="btn-group">
-        <a asp-action="Edit" asp-route-id="@Model.IdZapisa" class="btn btn-primary">Uredi</a>
+        @if (User.IsInRole("Administrator"))
+        {
+            <a asp-action="Edit" asp-route-id="@Model.IdZapisa" class="btn btn-primary">Uredi</a>
+        }
         <a asp-action="Index" class="btn btn-secondary">Nazad na listu</a>
     </div>
 </div>
