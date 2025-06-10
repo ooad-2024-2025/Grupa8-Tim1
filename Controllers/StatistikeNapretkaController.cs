@@ -12,7 +12,8 @@ using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
-    [Authorize(Roles = "Administrator, Korisnik")]
+    [Authorize(Roles = "Administrator, Korisnik, Trener")]
+
     public class StatistikeNapretkaController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -29,7 +30,6 @@ namespace OptiShape.Controllers
         // GET: StatistikeNapretka
         public async Task<IActionResult> Index()
         {
-            // For admins, show all records
             if (User.IsInRole("Administrator"))
             {
                 var statistike = await _context.StatistikeNapretka
@@ -37,14 +37,25 @@ namespace OptiShape.Controllers
                     .ToListAsync();
                 return View(statistike);
             }
-            else // For regular users, show only their own records
+            else if (User.IsInRole("Trener"))
             {
-                // Get current logged in user's email
-                var userEmail = User.Identity.Name;
+                var email = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
 
-                // Find the corresponding Korisnik record
-                var korisnik = await _context.Korisnik
-                    .FirstOrDefaultAsync(k => k.Email == userEmail);
+                if (trener == null)
+                    return Unauthorized();
+
+                var statistike = await _context.StatistikeNapretka
+                    .Include(s => s.Korisnik)
+                    .Where(s => s.Korisnik != null && s.Korisnik.IdTrenera == trener.IdKorisnika)
+                    .ToListAsync();
+
+                return View(statistike); // možeš imati poseban view ako želiš
+            }
+            else // Korisnik
+            {
+                var email = User.Identity?.Name;
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
 
                 if (korisnik == null)
                     return NotFound("Korisnik nije pronađen.");
@@ -57,6 +68,7 @@ namespace OptiShape.Controllers
                 return View(statistike);
             }
         }
+
 
         // GET: StatistikeNapretka/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -71,16 +83,23 @@ namespace OptiShape.Controllers
             if (statistika == null)
                 return NotFound();
 
-            // For regular users, check if this record belongs to them
-            if (!User.IsInRole("Administrator"))
+            if (User.IsInRole("Korisnik"))
             {
-                var userEmail = User.Identity.Name;
-                var korisnik = await _context.Korisnik
-                    .FirstOrDefaultAsync(k => k.Email == userEmail);
+                var email = User.Identity?.Name;
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
 
                 if (korisnik == null || statistika.IdKorisnika != korisnik.IdKorisnika)
                     return Forbid();
             }
+            else if (User.IsInRole("Trener"))
+            {
+                var email = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                if (trener == null || statistika.Korisnik?.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
 
             return View(statistika);
         }
@@ -148,33 +167,46 @@ namespace OptiShape.Controllers
         }
 
         // GET: StatistikeNapretka/Edit/5
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var statistika = await _context.StatistikeNapretka.FindAsync(id);
+            var statistika = await _context.StatistikeNapretka
+                .Include(s => s.Korisnik)
+                .FirstOrDefaultAsync(s => s.IdZapisa == id);
+
             if (statistika == null)
                 return NotFound();
 
-            var korisnici = _context.Korisnik
+            if (User.IsInRole("Trener"))
+            {
+                var email = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                if (trener == null || statistika.Korisnik?.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
+            var korisnici = await _context.Korisnik
                 .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
+                .ToListAsync();
+
             ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", statistika.IdKorisnika);
             return View(statistika);
         }
 
+
         // POST: StatistikeNapretka/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int id, [Bind("IdZapisa,Datum,Tezina,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
         {
             if (id != statistikeNapretka.IdZapisa)
                 return NotFound();
 
-            // Pronađi korisnika i uzmi visinu
             var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == statistikeNapretka.IdKorisnika);
 
             if (korisnik == null)
@@ -183,6 +215,16 @@ namespace OptiShape.Controllers
             }
             else
             {
+                // Provjeri da li je trener vlasnik korisnika
+                if (User.IsInRole("Trener"))
+                {
+                    var email = User.Identity?.Name;
+                    var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                    if (trener == null || korisnik.IdTrenera != trener.IdKorisnika)
+                        return Forbid();
+                }
+
                 var visinaMetri = korisnik.Visina / 100.0;
                 if (visinaMetri > 0)
                 {
@@ -201,6 +243,7 @@ namespace OptiShape.Controllers
                     _context.Update(statistikeNapretka);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Statistika napretka je uspješno ažurirana.";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -209,10 +252,9 @@ namespace OptiShape.Controllers
                     else
                         throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
 
-            // Prikaz grešaka u konzoli (debug)
+            // Debug greške u modelu
             foreach (var entry in ModelState)
             {
                 foreach (var error in entry.Value.Errors)
@@ -221,12 +263,14 @@ namespace OptiShape.Controllers
                 }
             }
 
-            var korisnici = _context.Korisnik
+            var korisnici = await _context.Korisnik
                 .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
+                .ToListAsync();
+
             ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", statistikeNapretka.IdKorisnika);
             return View(statistikeNapretka);
         }
+
 
         // GET: StatistikeNapretka/Delete/5
         [Authorize(Roles = "Administrator")]

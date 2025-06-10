@@ -6,63 +6,100 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using OptiShape.Data;
 using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
-    [Authorize(Roles = "Administrator, Korisnik")]
+    [Authorize(Roles = "Administrator, Korisnik, Trener")]
     public class TerminController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TerminController(ApplicationDbContext context)
+        public TerminController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Termin
         public async Task<IActionResult> Index()
         {
-            var termini = await _context.Termin
-                .Include(t => t.Korisnik)
-                .ToListAsync();
-            return View(termini);
+            IQueryable<Termin> terminiQuery;
+
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                if (trener == null)
+                    return Forbid();
+
+                terminiQuery = _context.Termin
+                    .Include(t => t.Korisnik)
+                    .Where(t => t.Korisnik.IdTrenera == trener.IdKorisnika);
+            }
+            else
+            {
+                terminiQuery = _context.Termin.Include(t => t.Korisnik);
+            }
+
+            return View(await terminiQuery.ToListAsync());
         }
 
-        // GET: Termin/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var termin = await _context.Termin
-                .Include(t => t.Korisnik)
-                .FirstOrDefaultAsync(m => m.IdTermina == id);
+            var termin = await _context.Termin.Include(t => t.Korisnik).FirstOrDefaultAsync(m => m.IdTermina == id);
 
             if (termin == null)
                 return NotFound();
 
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                if (trener == null || termin.Korisnik?.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
             return View(termin);
         }
 
-        // GET: Termin/Create
-        [Authorize(Roles = "Administrator")]
-        public IActionResult Create()
+        [Authorize(Roles = "Administrator, Trener")]
+        public async Task<IActionResult> Create()
         {
-            var korisnici = _context.Korisnik
-                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
-            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme");
+
+            await PostaviKorisnikeDropdown();
             return View();
         }
 
-        // POST: Termin/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Create([Bind("IdTermina,Datum,IdKorisnika")] Termin termin)
+        [Authorize(Roles = "Administrator, Trener")]
+        public async Task<IActionResult> Create([Bind("IdTermina,Datum,IdKorisnika,VrijemeOd")] Termin termin)
         {
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == termin.IdKorisnika);
+
+                if (trener == null || korisnik == null || korisnik.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
+            // Kombinuj datum i vrijeme
+            termin.Datum = termin.Datum.Date + termin.VrijemeOd;
+
             if (ModelState.IsValid)
             {
                 _context.Add(termin);
@@ -71,48 +108,61 @@ namespace OptiShape.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Prikaz grešaka u konzoli (debug)
-            foreach (var entry in ModelState)
+            if (termin.VrijemeOd == default)
             {
-                foreach (var error in entry.Value.Errors)
-                {
-                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
-                }
+                ModelState.AddModelError("VrijemeOd", "Unesite vrijeme početka.");
             }
 
-            var korisnici = _context.Korisnik
-                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
-            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
+            await PostaviKorisnikeDropdown(termin.IdKorisnika);
             return View(termin);
         }
 
-        // GET: Termin/Edit/5
-        [Authorize(Roles = "Administrator")]
+
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var termin = await _context.Termin.FindAsync(id);
+            var termin = await _context.Termin.Include(t => t.Korisnik).FirstOrDefaultAsync(t => t.IdTermina == id);
             if (termin == null)
                 return NotFound();
 
-            var korisnici = _context.Korisnik
-                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
-            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                if (trener == null || termin.Korisnik?.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
+            await PostaviKorisnikeDropdown(termin.IdKorisnika);
             return View(termin);
         }
 
-        // POST: Termin/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Edit(int id, [Bind("IdTermina,Datum,IdKorisnika")] Termin termin)
         {
             if (id != termin.IdTermina)
                 return NotFound();
+
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.IdKorisnika == termin.IdKorisnika);
+
+                if (trener == null || korisnik == null || korisnik.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
+
+            termin.Datum = termin.Datum.Date + termin.VrijemeOd;
 
             if (ModelState.IsValid)
             {
@@ -121,64 +171,103 @@ namespace OptiShape.Controllers
                     _context.Update(termin);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Termin je uspješno ažuriran.";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!TerminExists(termin.IdTermina))
                         return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Prikaz grešaka u konzoli (debug)
-            foreach (var entry in ModelState)
-            {
-                foreach (var error in entry.Value.Errors)
-                {
-                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                    else throw;
                 }
             }
 
-            var korisnici = _context.Korisnik
-                .Select(k => new { k.IdKorisnika, PunoIme = k.Ime + " " + k.Prezime })
-                .ToList();
-            ViewData["IdKorisnika"] = new SelectList(korisnici, "IdKorisnika", "PunoIme", termin.IdKorisnika);
+            await PostaviKorisnikeDropdown(termin.IdKorisnika);
             return View(termin);
         }
 
-        // GET: Termin/Delete/5
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
                 return NotFound();
 
-            var termin = await _context.Termin
-                .Include(t => t.Korisnik)
-                .FirstOrDefaultAsync(m => m.IdTermina == id);
-
+            var termin = await _context.Termin.Include(t => t.Korisnik).FirstOrDefaultAsync(m => m.IdTermina == id);
             if (termin == null)
                 return NotFound();
+
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                if (trener == null || termin.Korisnik?.IdTrenera != trener.IdKorisnika)
+                    return Forbid();
+            }
 
             return View(termin);
         }
 
-        // POST: Termin/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator, Trener")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var termin = await _context.Termin.FindAsync(id);
+            var termin = await _context.Termin.Include(t => t.Korisnik).FirstOrDefaultAsync(t => t.IdTermina == id);
+
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
             if (termin != null)
             {
+                if (User.IsInRole("Trener"))
+                {
+                    var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                    if (trener == null || termin.Korisnik?.IdTrenera != trener.IdKorisnika)
+                        return Forbid();
+                }
+
                 _context.Termin.Remove(termin);
                 TempData["SuccessMessage"] = "Termin je uspješno obrisan.";
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task PostaviKorisnikeDropdown(int? selectedId = null)
+        {
+            List<SelectListItem> korisnici;
+            var appUser = await _userManager.GetUserAsync(User);
+            var email = appUser?.Email;
+
+            if (User.IsInRole("Trener"))
+            {
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                korisnici = await _context.Korisnik
+                    .Where(k => k.IdTrenera == trener.IdKorisnika)
+                    .Select(k => new SelectListItem
+                    {
+                        Value = k.IdKorisnika.ToString(),
+                        Text = k.Ime + " " + k.Prezime,
+                        Selected = k.IdKorisnika == selectedId
+                    })
+                    .ToListAsync();
+            }
+            else
+            {
+                korisnici = await _context.Korisnik
+                    .Select(k => new SelectListItem
+                    {
+                        Value = k.IdKorisnika.ToString(),
+                        Text = k.Ime + " " + k.Prezime,
+                        Selected = k.IdKorisnika == selectedId
+                    })
+                    .ToListAsync();
+            }
+
+            ViewBag.Korisnici = korisnici;
         }
 
         private bool TerminExists(int id)

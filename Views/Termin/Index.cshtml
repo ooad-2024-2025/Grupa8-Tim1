@@ -172,7 +172,16 @@
                 {
                     <tr>
                         <td><strong>@item.Korisnik?.Ime @item.Korisnik?.Prezime</strong></td>
-                        <td>@item.Datum.ToString("dd.MM.yyyy HH:mm")</td>
+                        @{
+                            var vrijemeOd = item.Datum.ToString("HH:mm");
+                            var vrijemeDo = item.Datum.AddHours(1).ToString("HH:mm");
+                        }
+                        <td>
+                            <span class="me-2">📅 @item.Datum.ToString("dd.MM.yyyy")</span>
+                            <span>⏰ @item.Datum.ToString("HH:mm") - @item.Datum.AddHours(1).ToString("HH:mm")</span>
+                        </td>
+
+
                         <td>
                             <div class="btn-group">
                                 @if (User.IsInRole("Administrator") || User.IsInRole("Trener"))

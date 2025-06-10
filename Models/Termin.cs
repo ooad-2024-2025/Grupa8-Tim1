@@ -21,5 +21,16 @@ namespace OptiShape.Models
 
         [ValidateNever]
         public Korisnik? Korisnik { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Vrijeme početka")]
+        [DataType(DataType.Time)]
+        public TimeSpan VrijemeOd { get; set; }
+
+
+        [NotMapped]
+        [Display(Name = "Vrijeme završetka")]
+        public TimeSpan VrijemeDo => VrijemeOd.Add(TimeSpan.FromHours(1));
+
     }
 }

@@ -102,6 +102,12 @@
         <div class="details-value">@Model.Datum.ToString("dd.MM.yyyy HH:mm")</div>
     </div>
 
+    <div class="details-row">
+        <div class="details-label">Vrijeme završetka:</div>
+        <div class="details-value">@Model.Datum.AddHours(1).ToString("HH:mm")</div>
+    </div>
+
+
     <div class="btn-group">
         @if (User.IsInRole("Administrator") || User.IsInRole("Trener"))
         {
