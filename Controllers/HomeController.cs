@@ -10,15 +10,23 @@ using System.Net.Mail;
 
 namespace OptiShape.Controllers
 {
+    public class TrenerViewModel
+    {
+        public Korisnik Trener { get; set; }
+        public int BrojKorisnika { get; set; }
+    }
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _logger = logger;
             _db = db;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -106,17 +114,34 @@ namespace OptiShape.Controllers
                 return RedirectToAction("Dashboard");
             }
 
-            var trenerIds = await _db.Korisnik
-                .Where(k => k.IdTrenera != null)
-                .Select(k => k.IdTrenera.Value)
-                .Distinct()
-                .ToListAsync();
+            var korisnikovCilj = korisnik.Cilj;
 
+            // Dohvati sve Identity korisnike s rolom "Trener"
+            var sviIdentityKorisnici = _userManager.Users.ToList();
+            var treneriEmails = new List<string>();
+
+            foreach (var identityUser in sviIdentityKorisnici)
+            {
+                var roles = await _userManager.GetRolesAsync(identityUser);
+                if (roles.Contains("Trener"))
+                {
+                    treneriEmails.Add(identityUser.Email);
+                }
+            }
+
+            // Pronađi trenere iz baze s istim ciljem
             var treneri = await _db.Korisnik
-                .Where(k => trenerIds.Contains(k.IdKorisnika))
+                .Where(k => treneriEmails.Contains(k.Email) && k.Cilj == korisnikovCilj)
                 .ToListAsync();
 
-            return View(treneri);
+            // Pripremi ViewModel s brojem korisnika po treneru
+            var trenerVMs = treneri.Select(trener => new TrenerViewModel
+            {
+                Trener = trener,
+                BrojKorisnika = _db.Korisnik.Count(k => k.IdTrenera == trener.IdKorisnika)
+            }).ToList();
+
+            return View(trenerVMs);
         }
 
         [HttpPost]
@@ -126,7 +151,6 @@ namespace OptiShape.Controllers
             var userEmail = User.Identity?.Name;
             var korisnik = await _db.Korisnik.FirstOrDefaultAsync(k => k.Email == userEmail);
 
-            // Provjera validnosti korisnika i trenera
             if (korisnik == null || korisnik.IdTrenera != null)
             {
                 return RedirectToAction("Dashboard");
