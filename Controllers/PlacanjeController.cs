@@ -10,7 +10,7 @@ using OptiShape.Models;
 
 namespace OptiShape.Controllers
 {
-    [Authorize(Roles = "Administrator")] // Removed "Korisnik" role from authorization
+    [Authorize(Roles = "Administrator")] // Default authorization for admin-only actions
     public class PlacanjeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -46,7 +46,6 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Create
-        [Authorize(Roles = "Administrator")]
         public IActionResult Create()
         {
             var korisnici = _context.Korisnik
@@ -59,7 +58,6 @@ namespace OptiShape.Controllers
         // POST: Placanje/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Create([Bind("IdPlacanja,DatumPlacanja,Iznos,PopustPrimijenjen,NacinPlacanja,IdKorisnika")] Placanje placanje)
         {
             if (ModelState.IsValid)
@@ -87,7 +85,6 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Edit/5
-        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -107,7 +104,6 @@ namespace OptiShape.Controllers
         // POST: Placanje/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("IdPlacanja,DatumPlacanja,Iznos,PopustPrimijenjen,NacinPlacanja,IdKorisnika")] Placanje placanje)
         {
             if (id != placanje.IdPlacanja)
@@ -148,7 +144,6 @@ namespace OptiShape.Controllers
         }
 
         // GET: Placanje/Delete/5
-        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -167,7 +162,6 @@ namespace OptiShape.Controllers
         // POST: Placanje/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var placanje = await _context.Placanje.FindAsync(id);
@@ -178,6 +172,78 @@ namespace OptiShape.Controllers
             }
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Placanje/CreateForUser
+        [AllowAnonymous] // Override the class-level authorization
+        [Authorize(Roles = "Korisnik")]
+        public async Task<IActionResult> CreateForUser()
+        {
+            // Get current user information to determine if they have student status
+            var email = User.Identity?.Name;
+            var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+            if (korisnik == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            // Set ViewBag properties for the view
+            ViewBag.IsStudent = korisnik.StudentskiStatus;
+            ViewBag.Amount = korisnik.StudentskiStatus ? 7.00 : 10.00;
+
+            // Create model with default values
+            var placanje = new Placanje
+            {
+                DatumPlacanja = DateTime.Now,
+                Iznos = korisnik.StudentskiStatus ? 7.00 : 10.00,
+                NacinPlacanja = NacinPlacanja.KARTICA // Default payment method
+            };
+
+            return View(placanje);
+        }
+
+        // POST: Placanje/CreateForUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous] // Override the class-level authorization
+        [Authorize(Roles = "Korisnik")]
+        public async Task<IActionResult> CreateForUser([Bind("DatumPlacanja,NacinPlacanja,Iznos")] Placanje placanje)
+        {
+            // Get current user information
+            var email = User.Identity?.Name;
+            var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+            if (korisnik == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            // Set automatically determined values
+            placanje.IdKorisnika = korisnik.IdKorisnika;
+            placanje.PopustPrimijenjen = korisnik.StudentskiStatus;
+            placanje.Iznos = korisnik.StudentskiStatus ? 7.00 : 10.00;
+
+            // Remove Iznos field from ModelState validation since we're setting it programmatically
+            ModelState.Remove("Iznos");
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(placanje);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Plaćanje članarine je uspješno izvršeno.";
+                return RedirectToAction("Dashboard", "Home");
+            }
+
+            // Debug any other validation errors
+            foreach (var entry in ModelState)
+            {
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine($"Greška za {entry.Key}: {error.ErrorMessage}");
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            ViewBag.IsStudent = korisnik.StudentskiStatus;
+            ViewBag.Amount = korisnik.StudentskiStatus ? 7.00 : 10.00;
+            return View(placanje);
         }
 
         private bool PlacanjeExists(int id)

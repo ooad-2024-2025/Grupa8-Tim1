@@ -16,12 +16,21 @@
     Korisnik korisnik = null;
     bool showStudentApplication = false;
     bool showTrainerSelection = false;
+    bool hasRecentPayment = false;
+    DateTime lastMonth = DateTime.Now.AddMonths(-1);
 
     if (appUser != null && !isAdmin && !isTrainer)
     {
         korisnik = await DbContext.Korisnik.FirstOrDefaultAsync(k => k.Email == appUser.Email);
         showStudentApplication = korisnik != null && !korisnik.StudentskiStatus;
         showTrainerSelection = korisnik != null && korisnik.IdTrenera == null;
+
+        // Check if user has made a payment in the last month
+        if (korisnik != null)
+        {
+            hasRecentPayment = await DbContext.Placanje
+                .AnyAsync(p => p.IdKorisnika == korisnik.IdKorisnika && p.DatumPlacanja >= lastMonth);
+        }
     }
 }
 
@@ -100,6 +109,31 @@
                                 <small class="text-muted">Aplicirajte za studentski status i ostvarite popust na mjesečnu tarifu.</small>
                             }
                         </p>
+
+                        <!-- Payment status for current month -->
+                        <div class="alert @(hasRecentPayment ? "alert-success" : "alert-danger") text-center mt-3">
+                            @if (hasRecentPayment)
+                            {
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <strong>Platili ste članarinu za ovaj mjesec.</strong>
+                            }
+                            else
+                            {
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <strong>Niste platili članarinu za ovaj mjesec.</strong>
+                            }
+                        </div>
+
+                        <!-- Payment button - show only if not paid recently -->
+                        @if (!hasRecentPayment)
+                        {
+                            <div class="text-center mt-3">
+                                <a asp-controller="Placanje" asp-action="CreateForUser" class="btn btn-warning">
+                                    <i class="bi bi-cash-coin me-2"></i>
+                                    Izvrši plaćanje članarine
+                                </a>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
