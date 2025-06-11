@@ -44,6 +44,18 @@
                 margin-bottom: 5px;
                 color: #475569;
             }
+
+            .plan-card a.btn {
+                font-weight: 600;
+                border-radius: 8px;
+                transition: all 0.2s ease-in-out;
+            }
+
+                .plan-card a.btn:hover {
+                    background-color: #2563eb;
+                    color: #fff;
+                }
+
     </style>
 }
 
@@ -64,7 +76,17 @@
                 <span><strong>Proteini:</strong> @plan.Protein g</span>
                 <span><strong>Ugljikohidrati:</strong> @plan.Ugljikohidrati g</span>
                 <span><strong>Masti:</strong> @plan.Masti g</span>
+
+                <a asp-controller="PlanIshraneITreninga"
+                   asp-action="PieChart"
+                   asp-route-id="@plan.IdPlana"
+                   class="btn btn-sm btn-outline-primary mt-3">
+                    Prikaži graf nutritivnih vrijednosti
+                </a>
+
             </div>
         }
     }
+
+
 </div>

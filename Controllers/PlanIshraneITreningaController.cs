@@ -420,6 +420,30 @@ namespace OptiShape.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        // za piechart
+        [Authorize(Roles = "Administrator, Korisnik, Trener")]
+        public async Task<IActionResult> PieChart(int id)
+        {
+            var plan = await _context.PlanIshraneTreninga
+                .Include(p => p.Korisnik)
+                .FirstOrDefaultAsync(p => p.IdPlana == id);
+
+            if (plan == null)
+                return NotFound();
+
+            // Autorizacija: korisnik vidi samo svoj plan, trener samo svojih korisnika
+            var email = User.Identity?.Name;
+            var trenutniKorisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+            if (User.IsInRole("Korisnik") && plan.IdKorisnika != trenutniKorisnik?.IdKorisnika)
+                return Forbid();
+
+            if (User.IsInRole("Trener") && plan.Korisnik?.IdTrenera != trenutniKorisnik?.IdKorisnika)
+                return Forbid();
+
+            return View(plan);
+        }
+
 
 
         private bool PlanIshraneTreningaExists(int id)

@@ -350,9 +350,51 @@ namespace OptiShape.Controllers
 
 
 
+
+
         private bool StatistikeNapretkaExists(int id)
         {
             return _context.StatistikeNapretka.Any(e => e.IdZapisa == id);
         }
+        [Authorize]
+        public async Task<IActionResult> Graf()
+        {
+            List<StatistikeNapretka> statistike;
+
+            if (User.IsInRole("Administrator"))
+            {
+                statistike = await _context.StatistikeNapretka
+                    .Include(s => s.Korisnik)
+                    .ToListAsync();
+            }
+            else if (User.IsInRole("Trener"))
+            {
+                var email = User.Identity?.Name;
+                var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                statistike = await _context.StatistikeNapretka
+                    .Include(s => s.Korisnik)
+                    .Where(s => s.Korisnik != null && s.Korisnik.IdTrenera == trener.IdKorisnika)
+                    .ToListAsync();
+            }
+            else // Korisnik
+            {
+                var email = User.Identity?.Name;
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+                statistike = await _context.StatistikeNapretka
+                    .Where(s => s.IdKorisnika == korisnik.IdKorisnika)
+                    .ToListAsync();
+            }
+
+            statistike = statistike.OrderBy(s => s.Datum).ToList();
+            return View("Graf", statistike);
+        } // za grafikon statistike napretka korisnika
+
+
+
+
     }
+
+
 }
