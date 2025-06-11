@@ -72,5 +72,9 @@ namespace OptiShape.Models
         [ForeignKey("IdTrenera")]
         [ValidateNever]
         public Korisnik? Trener { get; set; }
+
+        
+
+
     }
 }

@@ -9,18 +9,18 @@
     ViewData["Title"] = "Dashboard";
     ViewData["FixedNavbar"] = true;
 
-    // Get current user
-    var user = await UserManager.GetUserAsync(User);
+    var appUser = await UserManager.GetUserAsync(User);
     var isAdmin = User.IsInRole("Administrator");
     var isTrainer = User.IsInRole("Trener");
-    var showStudentApplication = user != null && !isAdmin && !isTrainer && !user.StudentskiStatus;
 
-    // Provjeri da li korisnik nema trenera (IdTrenera == null)
+    Korisnik korisnik = null;
+    bool showStudentApplication = false;
     bool showTrainerSelection = false;
-    if (user != null && !isAdmin && !isTrainer)
+
+    if (appUser != null && !isAdmin && !isTrainer)
     {
-        // Pronađi korisnika u bazi po emailu
-        var korisnik = await DbContext.Korisnik.FirstOrDefaultAsync(k => k.Email == user.Email);
+        korisnik = await DbContext.Korisnik.FirstOrDefaultAsync(k => k.Email == appUser.Email);
+        showStudentApplication = korisnik != null && !korisnik.StudentskiStatus;
         showTrainerSelection = korisnik != null && korisnik.IdTrenera == null;
     }
 }
@@ -73,23 +73,23 @@
             </div>
         }
 
-        @if (user != null && !isAdmin && !isTrainer)
+        @if (korisnik != null)
         {
             <div class="col-12">
-                <div class="card border-@(user.StudentskiStatus ? "primary" : "warning") mb-4">
+                <div class="card border-@(korisnik.StudentskiStatus ? "primary" : "warning") mb-4">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="bi bi-credit-card-fill me-2"></i>
                             Vaša mjesečna tarifa
                         </h5>
                         <p class="card-text">
-                            Kao @(user.StudentskiStatus ? "student" : "korisnik") OptiShape platforme, vaša mjesečna tarifa iznosi:
+                            Kao @(korisnik.StudentskiStatus ? "student" : "korisnik") OptiShape platforme, vaša mjesečna tarifa iznosi:
                         </p>
-                        <h3 class="text-center mt-3 mb-3" style="color: @(user.StudentskiStatus ? "#0d6efd" : "#fd7e14")">
-                            <strong>@(user.StudentskiStatus ? "7 KM" : "10 KM")</strong> mjesečno
+                        <h3 class="text-center mt-3 mb-3" style="color: @(korisnik.StudentskiStatus ? "#0d6efd" : "#fd7e14")">
+                            <strong>@(korisnik.StudentskiStatus ? "7 KM" : "10 KM")</strong> mjesečno
                         </h3>
                         <p class="card-text text-center">
-                            @if (user.StudentskiStatus)
+                            @if (korisnik.StudentskiStatus)
                             {
                                 <span class="badge bg-primary">Studentski popust primijenjen!</span>
                             }
@@ -102,7 +102,5 @@
                 </div>
             </div>
         }
-
-        <!-- Ovdje možete dodati dodatne kartice sa funkcionalnostima ovisno o ulozi korisnika -->
     </div>
 </div>
