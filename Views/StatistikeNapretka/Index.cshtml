@@ -175,15 +175,20 @@
                         <td>@item.KalorijskiUnos</td>
                         <td>
                             <div class="btn-group">
-                                <a asp-action="Edit" asp-route-id="@item.IdZapisa" class="btn btn-edit">Uredi</a>
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.IdZapisa" class="btn btn-edit">Uredi</a>
+                                }
+
                                 <a asp-action="Details" asp-route-id="@item.IdZapisa" class="btn btn-details">Detalji</a>
+
                                 @if (User.IsInRole("Administrator"))
                                 {
                                     <a asp-action="Delete" asp-route-id="@item.IdZapisa" class="btn btn-delete">Obriši</a>
                                 }
-
                             </div>
                         </td>
+
                     </tr>
                 }
             </tbody>

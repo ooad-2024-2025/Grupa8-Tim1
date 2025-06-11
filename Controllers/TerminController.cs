@@ -39,15 +39,28 @@ namespace OptiShape.Controllers
 
                 terminiQuery = _context.Termin
                     .Include(t => t.Korisnik)
-                    .Where(t => t.Korisnik.IdTrenera == trener.IdKorisnika);
+                    .Where(t => t.Korisnik != null && t.Korisnik.IdTrenera == trener.IdKorisnika);
+
+            }
+            else if (User.IsInRole("Korisnik"))
+            {
+                var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+                if (korisnik == null)
+                    return Forbid();
+
+                terminiQuery = _context.Termin
+                    .Include(t => t.Korisnik)
+                    .Where(t => t.IdKorisnika == korisnik.IdKorisnika);
             }
             else
             {
+                // Administrator vidi sve termine
                 terminiQuery = _context.Termin.Include(t => t.Korisnik);
             }
 
             return View(await terminiQuery.ToListAsync());
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -245,15 +258,22 @@ namespace OptiShape.Controllers
             {
                 var trener = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
 
-                korisnici = await _context.Korisnik
-                    .Where(k => k.IdTrenera == trener.IdKorisnika)
-                    .Select(k => new SelectListItem
-                    {
-                        Value = k.IdKorisnika.ToString(),
-                        Text = k.Ime + " " + k.Prezime,
-                        Selected = k.IdKorisnika == selectedId
-                    })
-                    .ToListAsync();
+                if (trener == null)
+                {
+                    korisnici = new List<SelectListItem>(); // ili baci grešku ako želiš
+                }
+                else
+                {
+                    korisnici = await _context.Korisnik
+                        .Where(k => k.IdTrenera == trener.IdKorisnika)
+                        .Select(k => new SelectListItem
+                        {
+                            Value = k.IdKorisnika.ToString(),
+                            Text = k.Ime + " " + k.Prezime,
+                            Selected = k.IdKorisnika == selectedId
+                        })
+                        .ToListAsync();
+                }
             }
             else
             {
@@ -269,6 +289,7 @@ namespace OptiShape.Controllers
 
             ViewBag.Korisnici = korisnici;
         }
+
 
         private bool TerminExists(int id)
         {

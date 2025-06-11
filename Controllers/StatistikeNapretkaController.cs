@@ -167,7 +167,7 @@ namespace OptiShape.Controllers
         }
 
         // GET: StatistikeNapretka/Edit/5
-        [Authorize(Roles = "Administrator, Trener")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -201,7 +201,7 @@ namespace OptiShape.Controllers
         // POST: StatistikeNapretka/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Administrator, Trener")]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("IdZapisa,Datum,Tezina,KalorijskiUnos,IdKorisnika")] StatistikeNapretka statistikeNapretka)
         {
             if (id != statistikeNapretka.IdZapisa)
