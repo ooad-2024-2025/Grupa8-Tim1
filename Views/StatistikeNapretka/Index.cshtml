@@ -135,12 +135,18 @@
 
 <div class="page-title">
     <h1><i class="bi bi-graph-up-arrow me-2"></i> Statistike napretka</h1>
+
     @if (User.IsInRole("Administrator"))
     {
         <a asp-action="Create" class="btn btn-primary">+ Kreiraj novu</a>
     }
+    else if (User.IsInRole("Korisnik"))
+    {
+        <a asp-action="CreateForUser" class="btn btn-primary">+ Dodaj statistiku</a>
+    }
 
 </div>
+
 
 <div class="card-custom">
     <div class="table-responsive">

@@ -305,6 +305,51 @@ namespace OptiShape.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // za korisnika create poseban (GET)
+        [Authorize(Roles = "Korisnik")]
+        public IActionResult CreateForUser()
+        {
+            return View("CreateForUser"); // kreirat ćemo poseban view
+        }
+
+
+        // ZA KORISNIKA POST CREATE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Korisnik")]
+        public async Task<IActionResult> CreateForUser([Bind("Datum,Tezina")] StatistikeNapretka statistikeNapretka)
+        {
+            var email = User.Identity?.Name;
+            var korisnik = await _context.Korisnik.FirstOrDefaultAsync(k => k.Email == email);
+
+            if (korisnik == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            var visinaMetri = korisnik.Visina / 100.0;
+            if (visinaMetri <= 0)
+            {
+                ModelState.AddModelError(string.Empty, "Visina korisnika nije validna.");
+                return View("CreateForUser", statistikeNapretka);
+            }
+
+            statistikeNapretka.IdKorisnika = korisnik.IdKorisnika;
+            statistikeNapretka.Bmi = Math.Round(statistikeNapretka.Tezina / (visinaMetri * visinaMetri), 2);
+            statistikeNapretka.KalorijskiUnos = (int)Math.Round(24 * statistikeNapretka.Tezina * 1.2, 0);
+            // primjer: BMR * aktivnost
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(statistikeNapretka);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Statistika je uspješno dodana.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View("CreateForUser", statistikeNapretka);
+        }
+
+
+
         private bool StatistikeNapretkaExists(int id)
         {
             return _context.StatistikeNapretka.Any(e => e.IdZapisa == id);
