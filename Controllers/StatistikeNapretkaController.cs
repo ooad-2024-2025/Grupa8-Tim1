@@ -363,7 +363,7 @@ namespace OptiShape.Controllers
         {
             return _context.StatistikeNapretka.Any(e => e.IdZapisa == id);
         }
-        [Authorize]
+        [Authorize(Roles = "Korisnik")]
         public async Task<IActionResult> Graf()
         {
             List<StatistikeNapretka> statistike;
