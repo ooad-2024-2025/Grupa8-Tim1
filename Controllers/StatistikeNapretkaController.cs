@@ -309,7 +309,14 @@ namespace OptiShape.Controllers
         [Authorize(Roles = "Korisnik")]
         public IActionResult CreateForUser()
         {
-            return View("CreateForUser"); // kreirat ćemo poseban view
+            // Initialize the model with default values
+            var statistika = new StatistikeNapretka
+            {
+                Datum = DateTime.Today // Set default date to today
+            };
+
+            ViewData["Title"] = "Dodaj statistiku napretka";
+            return View("CreateForUser", statistika); // Pass the model to the view
         }
 
 

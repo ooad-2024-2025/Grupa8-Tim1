@@ -1,7 +1,7 @@
-﻿@model OptiShape.Models.Placanje
+﻿@model OptiShape.Models.StatistikeNapretka
 
 @{
-    ViewData["Title"] = "Izvršite plaćanje članarine";
+    ViewData["Title"] = "Dodaj statistiku napretka";
 }
 
 @section Styles {
@@ -17,17 +17,18 @@
             margin: 40px auto;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            max-width: 700px;
+            max-width: 600px;
         }
 
         h2 {
             color: #1e3a8a;
             font-weight: 700;
             margin-bottom: 20px;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-label {
@@ -39,17 +40,35 @@
 
         .form-control {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-            .form-control:focus {
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-                outline: none;
-            }
+        /* Remove spinner arrows from number input */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .form-control:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            outline: none;
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 6px;
+        }
 
         .btn-group {
             margin-top: 30px;
@@ -59,25 +78,30 @@
 
         .btn-primary, .btn-secondary {
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             padding: 12px 20px;
             text-decoration: none;
             display: inline-block;
+            transition: all 0.3s ease;
         }
 
         .btn-primary {
             background-color: #2563eb;
             color: #ffffff;
+            flex: 2;
         }
 
             .btn-primary:hover {
                 background-color: #1d4ed8;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
             }
 
         .btn-secondary {
             background-color: #e2e8f0;
             color: #1e293b;
+            flex: 1;
         }
 
             .btn-secondary:hover {
@@ -91,95 +115,78 @@
             display: block;
         }
 
-        .info-box {
-            background-color: #f0f9ff;
-            border-left: 4px solid #3b82f6;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .membership-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: @(ViewBag.IsStudent ? "#1d4ed8" : "#fb923c");
-            margin-bottom: 10px;
-            display: block;
-            text-align: center;
-        }
-
-        .price-tag {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: @(ViewBag.IsStudent ? "#dbeafe" : "#fff7ed");
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .price-badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .field-validation-error {
+            color: #dc2626;
+            font-size: 0.9rem;
             margin-top: 5px;
-            background-color: @(ViewBag.IsStudent ? "#1d4ed8" : "#fb923c");
-            color: white;
+            display: block;
         }
     </style>
 }
 
 <div class="create-container">
-    <h2>Izvršite plaćanje članarine</h2>
-
-    <div class="info-box">
-        <div class="price-tag">
-            <span class="membership-price">@(ViewBag.IsStudent ? "7 KM" : "10 KM") mjesečno</span>
-            @if (ViewBag.IsStudent)
-            {
-                <span class="price-badge">Studentski popust primijenjen</span>
-            }
-        </div>
-    </div>
+    <h2>Unesi statistiku napretka</h2>
 
     <form asp-action="CreateForUser" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
         <div class="form-group">
-            <label asp-for="DatumPlacanja" class="form-label">📅 Datum plaćanja</label>
-            <input asp-for="DatumPlacanja" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-            <span asp-validation-for="DatumPlacanja" class="text-danger"></span>
+            <label asp-for="Datum" class="form-label">Datum unosa</label>
+            <input asp-for="Datum" class="form-control" type="date" />
+            <span asp-validation-for="Datum" class="text-danger"></span>
+            <div class="info-text">Unesite datum za koji želite zabilježiti statistiku</div>
         </div>
 
         <div class="form-group">
-            <label asp-for="Iznos" class="form-label">💰 Iznos (KM)</label>
-            <input asp-for="Iznos" class="form-control" value="@(ViewBag.IsStudent ? 7.00 : 10.00)" readonly />
-            <span asp-validation-for="Iznos" class="text-danger"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="NacinPlacanja" class="form-label">💳 Način plaćanja</label>
-            <select asp-for="NacinPlacanja" class="form-control">
-                <option value="KARTICA">Kartica</option>
-                <option value="GOTOVINA">Gotovina</option>
-            </select>
-            <span asp-validation-for="NacinPlacanja" class="text-danger"></span>
+            <label asp-for="Tezina" class="form-label">Težina (kg)</label>
+            <input asp-for="Tezina" class="form-control" type="number" step="0.1" min="30" max="200" value="" />
+            <span asp-validation-for="Tezina" class="text-danger"></span>
+            <div class="info-text">Na osnovu težine i vaše visine automatski ćemo izračunati BMI i preporučeni kalorijski unos</div>
         </div>
 
         <div class="btn-group">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-cash-coin me-2"></i>
-                Izvrši plaćanje
-            </button>
-            <a asp-controller="Home" asp-action="Dashboard" class="btn btn-secondary">
-                Nazad na dashboard
-            </a>
+            <button type="submit" class="btn btn-primary">Spremi statistiku</button>
+            <a asp-action="Index" class="btn btn-secondary">Odustani</a>
         </div>
     </form>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Prevođenje validacijskih poruka na bosanski jezik
+        $(document).ready(function () {
+            // Lokalizirane poruke validacije
+            $.extend($.validator.messages, {
+                required: "Ovo polje je obavezno.",
+                number: "Unesite ispravan broj.",
+                date: "Unesite ispravan datum.",
+                min: "Unesite vrijednost veću ili jednaku {0}.",
+                max: "Unesite vrijednost manju ili jednaku {0}.",
+                step: "Unesite vrijednost koja je višekratnik broja {0}.",
+                email: "Unesite ispravnu email adresu.",
+                dateISO: "Unesite ispravan datum."
+            });
+
+            // Posebno prilagođavanje poruka za težinu
+            $("#Tezina").data("msg-min", "Težina mora biti najmanje 30 kg.");
+            $("#Tezina").data("msg-max", "Težina ne može biti veća od 200 kg.");
+
+            // Posebno prilagođavanje poruke za datum
+            $("#Datum").data("msg-date", "Unesite ispravan datum.");
+            $("#Datum").data("msg-required", "Datum je obavezan.");
+
+            // Ponovno pokretanje validacije nakon izmjene poruka
+            $("form").validate().settings.messages = $.extend(true, $("form").validate().settings.messages, {
+                Tezina: {
+                    min: "Težina mora biti najmanje 30 kg.",
+                    max: "Težina ne može biti veća od 200 kg."
+                },
+                Datum: {
+                    required: "Datum je obavezan.",
+                    date: "Unesite ispravan datum."
+                }
+            });
+        });
+    </script>
 }

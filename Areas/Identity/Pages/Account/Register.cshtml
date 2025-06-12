@@ -195,6 +195,34 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // Lokalizirane poruke validacije
+        $.extend($.validator.messages, {
+            required: "Ovo polje je obavezno.",
+            number: "Unesite ispravan broj.",
+            date: "Unesite ispravan datum.",
+            dateISO: "Unesite ispravan datum.",
+            maxlength: $.validator.format("Najviše {0} karaktera."),
+            minlength: $.validator.format("Najmanje {0} karaktera."),
+            email: "Unesite ispravnu email adresu."
+        });
+
+        // Zamjeniti validaciju datuma s prilagođenom implementacijom
+        $.validator.addMethod(
+            "date",
+            function(value, element) {
+                if (this.optional(element)) {
+                    return true;
+                }
+
+                try {
+                    return !isNaN(new Date(value).getTime());
+                } catch (e) {
+                    return false;
+                }
+            },
+            "Unesite ispravan datum."
+        );
+
         function showStep(stepNumber) {
             const steps = document.querySelectorAll('.form-step');
             steps.forEach(step => {
