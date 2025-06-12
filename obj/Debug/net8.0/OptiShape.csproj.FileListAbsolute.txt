@@ -1148,10 +1148,10 @@ C:\Desktop\OptiShape\bin\Debug\net8.0\MailKit.dll
 C:\Desktop\OptiShape\bin\Debug\net8.0\MimeKit.dll
 C:\Desktop\OptiShape\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Desktop\OptiShape\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
-C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\bin\Debug\net8.0\MailKit.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\bin\Debug\net8.0\MimeKit.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\omsak\source\repos\ooad-2024-2025\Grupa8-Tim1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Desktop\OptiShape\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

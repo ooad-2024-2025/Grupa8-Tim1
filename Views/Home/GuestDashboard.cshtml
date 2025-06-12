@@ -1,0 +1,214 @@
+﻿@model IEnumerable<OptiShape.Controllers.TrenerViewModel>
+@{
+    ViewData["Title"] = "Dashboard za goste";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Dashboard za goste</h2>
+
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>Dobrodošli na gost pristup!</strong> Kao gost, imate pristup osnovnom BMI kalkulatoru i kalkulatoru kalorijskog unosa.
+        Za pristup naprednim funkcijama kao što su personalizirani planovi treninga, statistika napretka i personalni treneri,
+        molimo vas da se <a href="/Identity/Account/Register" class="alert-link">registrujete</a> ili <a href="/Identity/Account/Login" class="alert-link">prijavite</a>.
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Unesite vaše informacije
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="goal">Fitness cilj</label>
+                        <select class="form-control" id="goal">
+                            <option value="lose">Mršanje</option>
+                            <option value="gain">Nabijanje mišićne mase</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="height">Visina (cm)</label>
+                        <input type="number" class="form-control" id="height" min="100" max="250">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="weight">Težina (kg)</label>
+                        <input type="number" class="form-control" id="weight" min="30" max="300">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="calculateResults()">Izračunaj</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Rezultati
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5>BMI (Indeks tjelesne mase):</h5>
+                        <div id="bmi-result" class="alert alert-info">Unesite visinu i težinu da vidite vaš BMI</div>
+                        <div id="bmi-category" class="mt-2"></div>
+                    </div>
+                    <div class="mb-3">
+                        <h5>Preporučeni dnevni unos kalorija:</h5>
+                        <div id="calorie-result" class="alert alert-info">Popunite formular da vidite preporučeni unos kalorija</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sekcija za trenere -->
+    <div class="mt-5">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">
+                    <i class="bi bi-person-check-fill me-2"></i>
+                    Naši treneri
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    Pogledajte naše kvalifikovane trenere. Registrujte se da biste dobili personalizirane planove treninga i ishrane.
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+                        @foreach (var trener in Model)
+                        {
+                            <div class="col">
+                                <div class="card h-100 trainer-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@trener.Trener.Ime @trener.Trener.Prezime</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">Email: @trener.Trener.Email</small><br>
+                                            <small class="text-muted">Telefon: @trener.Trener.BrojTelefona</small><br>
+                                            <small class="text-muted">Iskustvo: @trener.BrojKorisnika korisnik/a</small>
+                                        </p>
+                                        <a href="/Identity/Account/Register" class="btn btn-outline-success w-100">
+                                            <i class="bi bi-person-plus me-2"></i>
+                                            Registruj se i odaberi trenera
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Trenutno nema dostupnih trenera.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <div class="card">
+            <div class="card-header">
+                Zašto se registrovati?
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Prednosti registrovanih korisnika:</h5>
+                <ul>
+                    <li>Personalizirani planovi treninga prilagođeni vašim ciljevima</li>
+                    <li>Stručna podrška profesionalnih trenera</li>
+                    <li>Praćenje napretka kroz vrijeme</li>
+                    <li>Detaljni planovi ishrane bazirani na vašim potrebama</li>
+                    <li>Studentske pogodnosti i popusti</li>
+                </ul>
+                <div class="text-center mt-3">
+                    <a href="/Identity/Account/Register" class="btn btn-success">Registruj se</a>
+                    <a href="/Identity/Account/Login" class="btn btn-outline-primary ms-2">Prijavi se</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .trainer-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e0e0e0;
+    }
+
+        .trainer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-body .btn {
+        transition: all 0.3s ease;
+    }
+
+        .card-body .btn:hover {
+            background-color: #198754;
+            color: white;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        function calculateResults() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const goal = document.getElementById('goal').value;
+
+            if (isNaN(height) || isNaN(weight)) {
+                alert('Unesite ispravne vrijednosti za visinu i težinu.');
+                return;
+            }
+
+            // Calculate BMI
+            const heightInMeters = height / 100;
+            const bmi = weight / (heightInMeters * heightInMeters);
+            const bmiFormatted = bmi.toFixed(1);
+
+            // Set BMI result
+            const bmiResult = document.getElementById('bmi-result');
+            bmiResult.textContent = `Vaš BMI: ${bmiFormatted}`;
+
+            // Set BMI category
+            const bmiCategory = document.getElementById('bmi-category');
+            let category = '';
+            let categoryClass = '';
+
+            if (bmi < 18.5) {
+                category = 'Pothranjenost';
+                categoryClass = 'text-warning';
+            } else if (bmi >= 18.5 && bmi < 25) {
+                category = 'Normalna težina';
+                categoryClass = 'text-success';
+            } else if (bmi >= 25 && bmi < 30) {
+                category = 'Prekomjerna težina';
+                categoryClass = 'text-warning';
+            } else {
+                category = 'Gojaznost';
+                categoryClass = 'text-danger';
+            }
+
+            bmiCategory.innerHTML = `<span class="${categoryClass}">Kategorija: ${category}</span>`;
+
+            // Calculate basic caloric needs (using a simplified formula)
+            const baseCalories = 10 * weight + 6.25 * height - 5 * 30 + 5; // Assuming age 30, male
+
+            // Adjust based on goal
+            let adjustedCalories = baseCalories;
+            if (goal === 'lose') {
+                adjustedCalories = baseCalories - 500; // Deficit for weight loss
+            } else if (goal === 'gain') {
+                adjustedCalories = baseCalories + 500; // Surplus for weight gain
+            }
+
+            const calorieResult = document.getElementById('calorie-result');
+            calorieResult.textContent = `Preporučeni dnevni unos kalorija: ${Math.round(adjustedCalories)} kcal`;
+        }
+    </script>
+}

@@ -169,5 +169,53 @@ namespace OptiShape.Controllers
             TempData["Success"] = "Uspješno ste odabrali trenera!";
             return RedirectToAction("Dashboard");
         }
+
+        public async Task<IActionResult> GuestDashboard()
+        {
+            try
+            {
+                // Get trainers directly with a single efficient query
+                var trenerVMs = await GetTrainersOptimized();
+
+                // Set TempData message to inform the user they're in guest mode
+                TempData["GuestMode"] = "Pregledavate aplikaciju u gost načinu rada. Neke funkcionalnosti nisu dostupne za goste.";
+
+                return View(trenerVMs);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error loading guest dashboard: {ex.Message}");
+
+                // Return the view with an empty list if there's an error
+                TempData["Error"] = "Došlo je do greške prilikom učitavanja podataka o trenerima.";
+                return View(new List<TrenerViewModel>());
+            }
+        }
+
+        private async Task<List<TrenerViewModel>> GetTrainersOptimized()
+        {
+            // Get trainers and their client counts in a single efficient query
+            var trenerData = await (
+                from k in _db.Korisnik
+                join u in _userManager.Users on k.Email equals u.Email
+                join ur in _db.UserRoles on u.Id equals ur.UserId
+                join r in _db.Roles on ur.RoleId equals r.Id
+                where r.Name == "Trener"
+                select new
+                {
+                    Trener = k,
+                    // Use left join logic to count clients
+                    ClientCount = _db.Korisnik.Count(client => client.IdTrenera == k.IdKorisnika)
+                }
+            ).ToListAsync();
+
+            // Convert to view model
+            return trenerData.Select(td => new TrenerViewModel
+            {
+                Trener = td.Trener,
+                BrojKorisnika = td.ClientCount
+            }).ToList();
+        }
     }
+
 }
