@@ -5,11 +5,10 @@
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1 class="fade-in">OptiShape – Vaš prvi korak</h1>
-       
+        <h1>OptiShape – Vaš prvi korak</h1>
     </div>
 
-    <div class="welcome-card slide-in-left">
+    <div class="welcome-card">
         <div class="welcome-icon">
             <i class="bi bi-info-circle-fill"></i>
         </div>
@@ -24,7 +23,7 @@
     </div>
 
     <div class="card-grid">
-        <div class="calculator-card slide-in-right">
+        <div class="calculator-card">
             <div class="card-header-custom">
                 <h3>Unesite vaše informacije</h3>
                 <div class="icon-container">
@@ -63,7 +62,7 @@
             </div>
         </div>
 
-        <div class="results-card slide-in-left">
+        <div class="results-card">
             <div class="card-header-custom">
                 <h3>Rezultati</h3>
                 <div class="icon-container">
@@ -75,32 +74,17 @@
                     <h4>BMI (Indeks tjelesne mase):</h4>
                     <div id="bmi-result" class="result-display">Unesite visinu i težinu da vidite vaš BMI</div>
                     <div id="bmi-category" class="result-category"></div>
-                    <div class="bmi-meter">
-                        <div class="bmi-scale">
-                            <div class="bmi-marker" id="bmi-marker"></div>
-                        </div>
-                        <div class="bmi-labels">
-                            <div class="bmi-range underweight">Pothranjenost</div>
-                            <div class="bmi-range normal">Normalna</div>
-                            <div class="bmi-range overweight">Prekomjerna</div>
-                            <div class="bmi-range obese">Gojaznost</div>
-                        </div>
-
-                    </div>
                 </div>
                 <div class="result-section">
                     <h4>Preporučeni dnevni unos kalorija:</h4>
                     <div id="calorie-result" class="result-display">Popunite formular da vidite preporučeni unos kalorija</div>
-                    <div class="calorie-visual">
-                        <div class="calorie-bar" id="calorie-bar"></div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Sekcija za trenere -->
-    <div class="trainers-section fade-in">
+    <div class="trainers-section">
         <div class="section-header">
             <i class="bi bi-person-check-fill"></i>
             <h2>Naši treneri</h2>
@@ -134,7 +118,6 @@
                                     <span style="font-size: 1.2rem;">🏋️</span>
                                     <span>@trener.BrojKorisnika korisnik/a</span>
                                 </div>
-
                             </div>
                             <a href="/Identity/Account/Register" class="trainer-button">
                                 <i class="bi bi-person-plus"></i>
@@ -154,7 +137,7 @@
         }
     </div>
 
-    <div class="benefits-section slide-in-bottom">
+    <div class="benefits-section">
         <div class="benefits-card">
             <div class="card-header-custom">
                 <h3>Zašto se registrovati?</h3>
@@ -244,12 +227,10 @@
             font-size: 2.5rem;
             font-weight: 700;
             color: var(--primary-dark);
-            margin-bottom: 1rem; /* povećaj razmak ispod naslova */
+            margin-bottom: 1rem;
             position: relative;
-            z-index: 1; /* da uvijek ostane iznad underline */
+            z-index: 1;
         }
-
-  
 
     /* Welcome Card */
     .welcome-card {
@@ -339,15 +320,7 @@
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
         overflow: hidden;
-        transition: var(--transition);
     }
-
-        .calculator-card:hover,
-        .results-card:hover,
-        .benefits-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
 
     .card-header-custom {
         background: var(--gradient);
@@ -362,20 +335,8 @@
             margin: 0;
             font-size: 1.25rem;
             font-weight: 600;
+            color: white;
         }
-
-    .calculator-card .card-header-custom h3 {
-        color: white; 
-    }
-
-    .results-card .card-header-custom h3 {
-        color: white; 
-    }
-
-    .benefits-card .card-header-custom h3 {
-        color: white; 
-    }
-
 
     .icon-container {
         width: 40px;
@@ -489,7 +450,6 @@
         .primary-button i {
             position: relative;
             z-index: 1;
-            transition: transform 0.3s ease;
         }
 
         .primary-button::before {
@@ -508,11 +468,7 @@
             opacity: 1;
         }
 
-        .primary-button:hover i {
-            transform: translateX(5px);
-        }
-
-    /* Results Styles */
+    /* Results Styles - Simplified */
     .result-section {
         margin-bottom: 1.5rem;
     }
@@ -534,69 +490,11 @@
         border-radius: var(--border-radius);
         font-weight: 500;
         margin-bottom: 0.75rem;
-        transition: var(--transition);
     }
 
     .result-category {
         font-weight: 600;
         margin-bottom: 0.75rem;
-    }
-
-    /* BMI Meter */
-    .bmi-meter {
-        margin-top: 1rem;
-    }
-
-    .bmi-scale {
-        height: 8px;
-        background: linear-gradient(to right, #4cc9f0, #4895ef, #f72585, #e63946);
-        border-radius: 4px;
-        position: relative;
-        margin-bottom: 0.5rem;
-    }
-
-    .bmi-marker {
-        width: 16px;
-        height: 16px;
-        background-color: white;
-        border: 3px solid var(--primary-color);
-        border-radius: 50%;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        transform: translate(-50%, -50%);
-        transition: left 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        opacity: 0;
-    }
-
-    .bmi-labels {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 0.5rem;
-    }
-
-        .bmi-labels .bmi-range {
-            width: 25%;
-            text-align: center;
-            font-size: 0.75rem;
-            color: var(--gray-color);
-        }
-
-
-    /* Calorie Visual */
-    .calorie-visual {
-        height: 8px;
-        background-color: #f0f0f0;
-        border-radius: 4px;
-        margin-top: 1rem;
-        overflow: hidden;
-    }
-
-    .calorie-bar {
-        height: 100%;
-        width: 0;
-        background: var(--gradient);
-        transition: width 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     }
 
     /* Trainers Section */
@@ -656,15 +554,9 @@
         border-radius: var(--border-radius);
         box-shadow: var(--box-shadow);
         overflow: hidden;
-        transition: var(--transition);
         display: flex;
         flex-direction: column;
     }
-
-        .trainer-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
 
     .trainer-avatar {
         background: var(--gradient);
@@ -820,102 +712,7 @@
         margin-right: 0.5rem;
     }
 
-    /* Animations */
-    @@keyframes shimmer {
-        0%
-
-    {
-        left: -100%;
-    }
-
-    100% {
-        left: 100%;
-    }
-
-    }
-
-    .fade-in {
-        animation: fadeIn 0.8s ease forwards;
-    }
-
-    @@keyframes fadeIn {
-        from
-
-    {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-
-    }
-
-    .slide-in-left {
-        animation: slideInLeft 0.8s ease forwards;
-    }
-
-    @@keyframes slideInLeft {
-        from
-
-    {
-        opacity: 0;
-        transform: translateX(-50px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    }
-
-    .slide-in-right {
-        animation: slideInRight 0.8s ease forwards;
-    }
-
-    @@keyframes slideInRight {
-        from
-
-    {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    }
-
-    .slide-in-bottom {
-        animation: slideInBottom 0.8s ease forwards;
-    }
-
-    @@keyframes slideInBottom {
-        from
-
-    {
-        opacity: 0;
-        transform: translateY(50px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    }
-
-    /* Responsive Styles */
-    @@media (max-width: 768px) {
-        .card-grid
-
-    {
-        grid-template-columns: 1fr;
-    }
-
+  
     .welcome-card {
         flex-direction: column;
     }
@@ -949,49 +746,32 @@
             const bmi = weight / (heightInMeters * heightInMeters);
             const bmiFormatted = bmi.toFixed(1);
 
-            // Set BMI result with animation
+            // Set BMI result without animation
             const bmiResult = document.getElementById('bmi-result');
-            bmiResult.style.transform = 'scale(0.9)';
-            bmiResult.style.opacity = '0.5';
-
-            setTimeout(() => {
-                bmiResult.textContent = `Vaš BMI: ${bmiFormatted}`;
-                bmiResult.style.transform = 'scale(1)';
-                bmiResult.style.opacity = '1';
-                bmiResult.style.backgroundColor = '#e8f4fd';
-                bmiResult.style.borderLeft = '4px solid var(--primary-color)';
-            }, 300);
+            bmiResult.textContent = `Vaš BMI: ${bmiFormatted}`;
+            bmiResult.style.backgroundColor = '#e8f4fd';
+            bmiResult.style.borderLeft = '4px solid var(--primary-color)';
 
             // Set BMI category
             const bmiCategory = document.getElementById('bmi-category');
             let category = '';
             let categoryClass = '';
-            let markerPosition = 0;
 
             if (bmi < 18.5) {
                 category = 'Pothranjenost';
                 categoryClass = 'text-info';
-                markerPosition = 12.5;
             } else if (bmi >= 18.5 && bmi < 25) {
                 category = 'Normalna težina';
                 categoryClass = 'text-success';
-                markerPosition = 37.5;
             } else if (bmi >= 25 && bmi < 30) {
                 category = 'Prekomjerna težina';
                 categoryClass = 'text-warning';
-                markerPosition = 62.5;
             } else {
                 category = 'Gojaznost';
                 categoryClass = 'text-danger';
-                markerPosition = 87.5;
             }
 
             bmiCategory.innerHTML = `<span class="${categoryClass}">Kategorija: ${category}</span>`;
-
-            // Animate BMI marker
-            const bmiMarker = document.getElementById('bmi-marker');
-            bmiMarker.style.opacity = '1';
-            bmiMarker.style.left = `${markerPosition}%`;
 
             // Calculate basic caloric needs (using a simplified formula)
             const baseCalories = 10 * weight + 6.25 * height - 5 * 30 + 5; // Assuming age 30, male
@@ -1004,53 +784,11 @@
                 adjustedCalories = baseCalories + 500; // Surplus for weight gain
             }
 
+            // Set calorie result without animation
             const calorieResult = document.getElementById('calorie-result');
-            calorieResult.style.transform = 'scale(0.9)';
-            calorieResult.style.opacity = '0.5';
-
-            setTimeout(() => {
-                calorieResult.textContent = `Preporučeni dnevni unos kalorija: ${Math.round(adjustedCalories)} kcal`;
-                calorieResult.style.transform = 'scale(1)';
-                calorieResult.style.opacity = '1';
-                calorieResult.style.backgroundColor = '#e8f4fd';
-                calorieResult.style.borderLeft = '4px solid var(--primary-color)';
-
-                // Animate calorie bar
-                const calorieBar = document.getElementById('calorie-bar');
-                const percentage = Math.min(100, (adjustedCalories / 3000) * 100);
-                calorieBar.style.width = `${percentage}%`;
-            }, 300);
+            calorieResult.textContent = `Preporučeni dnevni unos kalorija: ${Math.round(adjustedCalories)} kcal`;
+            calorieResult.style.backgroundColor = '#e8f4fd';
+            calorieResult.style.borderLeft = '4px solid var(--primary-color)';
         }
-
-        // Add animation classes on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add staggered animations to trainer cards
-            const trainerCards = document.querySelectorAll('.trainer-card');
-            trainerCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 100 * index);
-                }, 500);
-            });
-
-            // Add animation to benefit items
-            const benefitItems = document.querySelectorAll('.benefit-item');
-            benefitItems.forEach((item, index) => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateX(-20px)';
-                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-
-                setTimeout(() => {
-                    item.style.opacity = '1';
-                    item.style.transform = 'translateX(0)';
-                }, 1000 + (100 * index));
-            });
-        });
     </script>
 }

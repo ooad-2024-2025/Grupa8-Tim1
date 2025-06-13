@@ -59,15 +59,25 @@ namespace OptiShape.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> SendStudentRequest()
+        public async Task<IActionResult> SendStudentRequest(string emailTo)
         {
             try
             {
                 var userName = User.Identity?.Name;
                 _logger.LogInformation($"Sending student application email for user: {userName}");
 
+                // Get the user's email from the Korisnik table
+                var korisnik = await _db.Korisnik.FirstOrDefaultAsync(k => k.Email == userName);
+
+                if (korisnik == null)
+                {
+                    TempData["Error"] = "Korisnik nije pronađen u bazi podataka.";
+                    return RedirectToAction("StudentApplication");
+                }
+
                 var fromAddress = new MailAddress("ooooaadd1@gmail.com", "OptiShape App");
-                var toAddress = new MailAddress("ooooaadd1@gmail.com", "Admin");
+                // Use the user's email from the database instead of the entered one
+                var toAddress = new MailAddress(korisnik.Email, korisnik.Ime + " " + korisnik.Prezime);
 
                 var smtp = new SmtpClient
                 {
@@ -83,15 +93,15 @@ namespace OptiShape.Controllers
                 {
                     Subject = "Zahtjev za studentski status",
                     Body = $"<h3>Zahtjev za studentski status</h3>" +
-                           $"<p><strong>Korisnik:</strong> {userName}</p>" +
+                           $"<p><strong>Korisnik:</strong> {korisnik.Ime} {korisnik.Prezime}</p>" +
                            $"<p>Korisnik je podnio zahtjev za studentski status putem OptiShape aplikacije.</p>" +
                            $"<p>Datum i vrijeme zahtjeva: {DateTime.Now}</p>",
                     IsBodyHtml = true
                 })
                 {
                     await Task.Run(() => smtp.Send(message));
-                    _logger.LogInformation("Email successfully sent");
-                    TempData["Success"] = "Zahtjev je uspješno poslan. Očekujte odgovor u narednih nekoliko dana.";
+                    _logger.LogInformation("Email successfully sent to {0}", toAddress.Address);
+                    TempData["Success"] = "Zahtjev je uspješno poslan. Očekujte odgovor na vaš email u narednih nekoliko dana.";
                 }
             }
             catch (Exception ex)
@@ -102,6 +112,7 @@ namespace OptiShape.Controllers
 
             return RedirectToAction("StudentApplication");
         }
+
 
         [Authorize]
         public async Task<IActionResult> IzborTrenera()
